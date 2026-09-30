@@ -281,3 +281,29 @@ The prompt sends my skills/experience, but **not** my name, email or phone. Send
 ### Lazy client
 `getClaude()` creates the Claude client the first time it's needed, not when the file is imported.
 So tests and the server run fine without an API key.
+
+---
+
+## Frontend vs backend
+| | What | Status |
+|---|---|---|
+| **Backend** (`server/`) | The brain: database, AI calls, logic. Runs on a server, nobody "sees" it. | ✅ Steps 1–4 |
+| **Frontend** (`web/`, later) | The face: web pages I click (dashboard, job list, scores). | ⬜ Step 7 |
+
+Backend first because a frontend only **displays** data, and I control the app mainly via **Telegram** (M2).
+The frontend will talk to the backend through API routes like `GET /jobs`.
+
+## How to run everything (cheat sheet)
+```bash
+# from project root
+docker compose up -d          # start the database (do this first)
+docker compose stop           # stop it (data is kept)
+
+# from server/
+npm run dev                   # backend → http://localhost:3000/health
+npm run db:studio             # database viewer → http://localhost:5555
+npm test                      # all tests (free, uses fake Claude)
+npm run resume:check          # validate my resume
+npm run score -- <jd.txt> "<company>" "<title>"   # real AI score (needs API key, costs ~₹0.5)
+```
+Stop a running server in the terminal: **Ctrl + C**.
