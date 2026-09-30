@@ -19,3 +19,6 @@ playwright-report/
 
 .DS_Store
 Thumbs.db
+
+# prisma generated client
+server/src/generated/

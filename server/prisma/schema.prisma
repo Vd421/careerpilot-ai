@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Job {
+  id          Int      @id @default(autoincrement())
+  company     String
+  title       String
+  url         String?
+  description String
+  createdAt   DateTime @default(now())
+}
