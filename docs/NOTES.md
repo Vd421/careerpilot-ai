@@ -307,3 +307,16 @@ npm run resume:check          # validate my resume
 npm run score -- <jd.txt> "<company>" "<title>"   # real AI score (needs API key, costs ~₹0.5)
 ```
 Stop a running server in the terminal: **Ctrl + C**.
+
+### First real score: step by step
+1. VS Code → **Terminal → New Terminal**
+2. `cd server`
+3. `npm run score -- ../data/private/jds/sample.txt "Acme" "Backend Engineer"`
+   - `--` = "pass the rest to my script"; then: JD file, company, title
+4. Wait ~3s → score, summary, matched/missing skills, red flags
+5. Paste the output to Claude to sanity-check
+
+| Error | Fix |
+|---|---|
+| `ANTHROPIC_API_KEY is not set` | Key missing in `server/.env`, or file not saved |
+| `ECONNREFUSED` / can't reach DB | Run `docker compose up -d` from project root first |
