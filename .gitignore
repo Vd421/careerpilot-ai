@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+coverage/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# personal data
+data/private/
+*.pdf
+screenshots/
+
+# playwright
+test-results/
+playwright-report/
+
+.DS_Store
+Thumbs.db
