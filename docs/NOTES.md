@@ -233,3 +233,51 @@ npm run resume:check     # after editing my real resume, validate it
 - missing = "not given / unknown".
 - `end` uses `.nullable()` (not `.optional()`), so I **must** write it: a date or `null`.
   Forgetting it is an error, so "still working here" can't be confused with "forgot the date".
+
+---
+
+## Step 4: Scoring a job with Claude ✅
+
+### What it does
+JD + my resume → Claude → `{ matchScore, summary, matchedSkills, missingSkills, redFlags }` → saved on the Job.
+```bash
+npm run score -- ../data/private/jds/sample.txt "Acme" "Backend Engineer"
+```
+
+### Words
+| Word | Plain English |
+|---|---|
+| **API key** | Password that lets my code use Claude. Lives in `.env`. Costs money per use. |
+| **Token** | A chunk of text (~¾ of a word). I pay per token, in and out. |
+| **Prompt** | The instructions + data I send. `system` = the rules, `user` = this specific resume + JD. |
+| **Structured output** | Claude is **forced** to answer in my exact JSON shape (my Zod schema). No messy text parsing. |
+| **max_tokens** | Hard limit on answer length. Caps the cost of one call. |
+
+### Model choice
+Haiku 4.5 = cheapest ($1 in / $5 out per million tokens). One score ≈ 4k in + 400 out ≈ **₹0.5**.
+Model names live in ONE place: `src/ai/client.ts`.
+
+### Dependency injection (big interview topic)
+`scoreJob(jobId, resume, model)`: the Claude call is **passed in**, not hard-coded.
+- Real app → passes the real Claude function (default).
+- Tests → pass a **fake** that returns a fixed answer.
+Why: real calls cost money, give different answers each time, and CI has no API key.
+The fake also **records the prompt**, so I can test "did we send the JD?".
+
+### Never trust AI output
+Even with structured outputs, I validate again with Zod. Score 150? `null` because it ran out of tokens?
+→ `ScoringError`, nothing saved on the Job.
+
+### Log cost BEFORE validating
+If the answer is garbage, I still paid for it. So the `AiCall` row (model, tokens) is written first.
+
+### Privacy
+The prompt sends my skills/experience, but **not** my name, email or phone. Send only what the task needs.
+
+### Database changes
+- `Job` got: `matchScore`, `summary`, `matchedSkills`, `missingSkills` (text lists), `redFlags` (JSON), `scoredAt`.
+- New `AiCall` table: one row per Claude call. Linked to a Job (`jobId`); if the job is deleted, the link becomes null (`onDelete: SetNull`), the cost record stays.
+
+### Lazy client
+`getClaude()` creates the Claude client the first time it's needed, not when the file is imported.
+So tests and the server run fine without an API key.

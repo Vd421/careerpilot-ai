@@ -14,4 +14,26 @@ model Job {
   url         String?
   description String
   createdAt   DateTime @default(now())
+
+  // Filled in by scoring (null until scored)
+  matchScore    Int?
+  summary       String?
+  matchedSkills String[]  @default([])
+  missingSkills String[]  @default([])
+  redFlags      Json?
+  scoredAt      DateTime?
+
+  aiCalls AiCall[]
+}
+
+// One row per Claude API call, so we always know what the AI costs.
+model AiCall {
+  id           Int      @id @default(autoincrement())
+  purpose      String // "score", later "tailor", "polish"...
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  jobId        Int?
+  job          Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
 }

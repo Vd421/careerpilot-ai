@@ -13,9 +13,11 @@
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "resume:check": "tsx src/resume/check.ts"
+    "resume:check": "tsx src/resume/check.ts",
+    "score": "tsx src/cli/score.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.130.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "dotenv": "^18.0.5",
