@@ -12,4 +12,5 @@
 - [ ] Replace `data/private/resume.json` with my latest resume (+ current service desk job?), then `npm run resume:check`
 
 ### Next
-- [ ] Step 4: score a JD against the resume with Claude (cheap model) → match %, missing skills, red flags; save on `Job`
+- [ ] Step 4: score a JD against the resume (Haiku 4.5, `messages.parse` + Zod) → save matchScore/summary/skills/redFlags on `Job`, log tokens in new `AiCall` table; tests use a fake Claude client; `npm run score -- jd.txt` for real runs. Plan explained 2026-10-01, not started.
+- [ ] **Me:** create Anthropic API key (console.anthropic.com, $5 credits), paste into `server/.env` myself
