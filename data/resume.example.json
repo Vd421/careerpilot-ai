@@ -1,0 +1,42 @@
+{
+  "basics": {
+    "name": "Asha Example",
+    "email": "asha@example.com",
+    "location": "Bengaluru, India",
+    "links": [{ "label": "GitHub", "url": "https://github.com/example" }]
+  },
+  "education": [
+    {
+      "school": "Example Institute of Technology",
+      "degree": "B.Tech, Computer Science",
+      "start": "2020",
+      "end": "2024"
+    }
+  ],
+  "experience": [
+    {
+      "id": "acme",
+      "company": "Acme Corp",
+      "role": "Software Engineer",
+      "start": "July 2024",
+      "end": null,
+      "bullets": [
+        { "id": "acme-1", "text": "Built REST APIs in Node.js and PostgreSQL for an internal billing tool" },
+        { "id": "acme-2", "text": "Wrote integration tests with Vitest, raising coverage from 40% to 75%" }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "todo",
+      "name": "Todo App",
+      "tech": ["React", "TypeScript"],
+      "link": "https://github.com/example/todo",
+      "bullets": [{ "id": "todo-1", "text": "Built a React + TypeScript todo app with offline support" }]
+    }
+  ],
+  "skills": [
+    { "category": "Languages", "items": ["TypeScript", "Python"] },
+    { "category": "Databases", "items": ["PostgreSQL"] }
+  ]
+}

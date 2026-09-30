@@ -163,3 +163,73 @@ await prisma.job.deleteMany();                                   // DELETE all
 ### How to trust a test
 Break it on purpose (expect "Google" instead of "Stripe") → it should **fail**.
 Put it back → it **passes**. If it never fails, it's not testing anything.
+
+---
+
+## Step 3: resume.json ✅
+
+### Why JSON, not the PDF
+A PDF is a picture of text; code can't reliably tell a bullet from a skill.
+JSON is structured, and **every bullet has an id**:
+```json
+{ "id": "hapticware-2", "text": "Engineered prompt engineering workflows ... by 40% ..." }
+```
+Later, Claude must say "I rewrote `hapticware-2` as …". Our code checks that id exists.
+Invented bullet → no real id → **rejected**. The "never invent" rule is enforced by code, not trust.
+
+### Where things live
+| File | In git? | What |
+|---|---|---|
+| `data/private/resume.json` | ❌ never | My real resume |
+| `data/resume.example.json` | ✅ | Fake person, used by tests (CI won't have my real file) |
+| `server/src/resume/schema.ts` | ✅ | The shape rules (Zod) |
+| `server/src/resume/load.ts` | ✅ | `loadResume(path)`: read → parse → validate → check ids |
+
+### Zod (new tool)
+Checks data **while the program runs**. TypeScript only checks my code **before** it runs;
+it can't see inside a JSON file I edit by hand. Zod can.
+```ts
+const bulletSchema = z.object({ id: z.string().min(1), text: z.string().min(1) });
+export type Resume = z.infer<typeof resumeSchema>;   // TS type made FROM the schema
+```
+- `.optional()` = field can be missing. `.nullable()` = field can be `null` (I use `end: null` for a current job).
+- `z.infer` → write the shape once, get runtime checks AND the TS type. They can't drift apart.
+- Bad file → clear error: `✖ expected string, received undefined → at experience[0].company`
+
+### loadResume: fail fast, fail clearly
+4 things can go wrong, each gets its own message:
+1. File missing → `Cannot read resume file`
+2. Not valid JSON → `Resume is not valid JSON`
+3. Wrong shape → Zod's message (which field, what's wrong)
+4. Duplicate id → `Duplicate id in resume: "acme-1"`
+
+`ResumeError` = my own error type, so other code can tell "bad resume" apart from other crashes.
+
+### Why unique ids matter
+If two bullets both had id `acme-1`, a tailored bullet pointing to `acme-1` could come from either.
+Can't trace it → can't verify it. So ids must be unique across the **whole** resume.
+
+### Testing bad input
+Good tests don't just check the happy path. Most of my resume tests feed in **broken** files:
+copy the example → break one thing → write to a temp folder → expect a specific error.
+
+### Lesson from this step
+One test failed first run: I expected `experience.0.company`, Zod actually says `experience[0].company`.
+**The code was right, the test was wrong.** When a test fails, check both sides.
+
+### Commands
+```bash
+npm run resume:check     # after editing my real resume, validate it
+```
+
+### Q&A from Step 3
+**Why do tests use a fake resume?**
+1. Privacy: my real resume never goes to git.
+2. CI (GitHub Actions) only has what's in git → my real file doesn't exist there → tests would crash.
+3. Tests need data that **never changes**. I'll edit my real resume often; that shouldn't break tests.
+
+**`null` vs missing**
+- `null` = "known to be empty" → `"end": null` means **current job**.
+- missing = "not given / unknown".
+- `end` uses `.nullable()` (not `.optional()`), so I **must** write it: a date or `null`.
+  Forgetting it is an error, so "still working here" can't be confused with "forgot the date".
