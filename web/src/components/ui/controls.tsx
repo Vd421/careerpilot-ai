@@ -76,7 +76,8 @@ export function Segmented<T extends string>({ value, onChange, options, label }:
 }
 
 export const TooltipProvider = TooltipPrimitive.Provider;
-export function Tip({ label, children, side = "right" }: { label: string; children: ReactNode; side?: "top" | "right" | "bottom" | "left" }) {
+export function Tip({ label, children, side = "right", disabled }: { label: string; children: ReactNode; side?: "top" | "right" | "bottom" | "left"; disabled?: boolean }) {
+  if (disabled) return <>{children}</>;
   return (
     <TooltipPrimitive.Root delayDuration={250}>
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
