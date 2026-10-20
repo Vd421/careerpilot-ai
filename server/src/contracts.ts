@@ -113,6 +113,7 @@ export const AGENT_ACTION_TYPES = [
   "application.approved",
   "application.skipped",
   "application.manual",
+  "application.marked_applied", // I applied myself on the manual path (dashboard button)
   "form.prescanned",
   "question.matched_bank",
   "question.asked",
