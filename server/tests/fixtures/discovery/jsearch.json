@@ -1,0 +1,43 @@
+{
+  "_note": "Hand-written from the JSearch docs (no RapidAPI call was made). Shape: status, data[].",
+  "status": "OK",
+  "data": [
+    {
+      "job_id": "js-1",
+      "job_title": "Full Stack Engineer",
+      "employer_name": "Acme Labs",
+      "job_description": "Build features with React and Node.\nOpen to freshers.",
+      "job_apply_link": "https://in.indeed.com/viewjob?jk=abc",
+      "apply_options": [
+        { "publisher": "Indeed", "apply_link": "https://in.indeed.com/viewjob?jk=abc", "is_direct": false },
+        { "publisher": "Acme", "apply_link": "https://boards.greenhouse.io/acme/jobs/123", "is_direct": true }
+      ],
+      "job_city": "Bengaluru",
+      "job_state": "Karnataka",
+      "job_country": "IN",
+      "job_is_remote": false,
+      "job_min_salary": 50000,
+      "job_max_salary": 80000,
+      "job_salary_currency": "INR",
+      "job_salary_period": "MONTH",
+      "job_posted_at_datetime_utc": "2026-10-19T08:00:00.000Z"
+    },
+    {
+      "job_id": "js-2",
+      "job_title": "SDE 1",
+      "employer_name": "Beta Corp",
+      "job_description": "Backend work.",
+      "job_apply_link": "https://careers.beta.example/jobs/9",
+      "apply_options": [],
+      "job_city": null,
+      "job_state": null,
+      "job_country": "IN",
+      "job_is_remote": true,
+      "job_min_salary": null,
+      "job_max_salary": null,
+      "job_salary_currency": null,
+      "job_salary_period": null,
+      "job_posted_at_datetime_utc": null
+    }
+  ]
+}

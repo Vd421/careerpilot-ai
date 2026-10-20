@@ -1,0 +1,26 @@
+{
+  "_note": "Hand-written from the Adzuna docs (no Adzuna call was made). Shape: results[].",
+  "count": 2,
+  "results": [
+    {
+      "id": "4501",
+      "title": "Junior <strong>Software</strong> Engineer",
+      "company": { "display_name": "Gamma Tech" },
+      "location": { "display_name": "Pune, Maharashtra" },
+      "description": "Work on our <strong>Node</strong> services &amp; APIs...",
+      "redirect_url": "https://www.adzuna.in/land/ad/4501?se=x",
+      "salary_min": 600000,
+      "salary_max": 900000,
+      "created": "2026-10-18T10:00:00Z"
+    },
+    {
+      "id": "4502",
+      "title": "Remote React Developer",
+      "company": { "display_name": "Delta" },
+      "location": { "display_name": "India" },
+      "description": "React.",
+      "redirect_url": "https://www.adzuna.in/land/ad/4502",
+      "created": "2026-10-17T10:00:00Z"
+    }
+  ]
+}

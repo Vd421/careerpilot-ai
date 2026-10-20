@@ -1,0 +1,133 @@
+{
+ "comments": "21/08/2026: Cursor pagination is now available and is the preferred way to page through the feed. Pass the nextCursor value from each response back as ?cursor=. It is faster than offset and will never return the same job twice. The offset parameter is deprecated and will be removed in a future release. 13/03/2026: The API has been updated to include the companySlug field in the response.",
+ "updatedAt": 1792533091,
+ "offset": 0,
+ "limit": 3,
+ "totalCount": 129218,
+ "nextCursor": "MjAyNi0xMC0yMFQyMTo0ODowMS42OTU5NDlafDI0MzE5Njk",
+ "jobs": [
+  {
+   "title": "Advisory | Accounting | Audit | Tax | Payroll",
+   "excerpt": "About UsITC Worldwide Advisors, LLP is a rapidly growing, modern provider of professional services to the middle market, operating globally.",
+   "companyName": "ITC WORLDWIDE",
+   "companySlug": "itc-worldwide",
+   "companyLogo": "https://cdn-images.himalayas.app/d6q8wj61aukzhxc62ft14opubo3x",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Kosovo"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Accounting-Advisory",
+    "Auditor",
+    "Accountant",
+    "Tax-Advisor",
+    "Payroll-Advisor",
+    "Accounting-and-Tax-Advisory",
+    "Audit-Tax-Accounting-Finance-Consulting",
+    "Tax-And-Advisory",
+    "Accounting-Advisory-Services",
+    "Financial-and-Tax-Advisory",
+    "Audit-Tax-Accounting-Corporate-Finance-and-Strategic-Planning",
+    "Tax-Advisory-Services",
+    "Tax-and-Accounting-Services",
+    "Tax-Advisory",
+    "Finance"
+   ],
+   "parentCategories": [
+    "Finance"
+   ],
+   "description": "<h3>About Us</h3><p>ITC Worldwide Advisors, LLP is a rapidly growing, modern provider of professional services to the middle market, operating globally. Our mission is to instill confidence in a world of change. Enable Transformation while doing more with less! Our exceptional people are the cornerstone of our unique culture and talent experience.</p><h3>Responsibilities</h3><ul>\n<li>Understand clients' needs and expectations, their business and industry, accounting and control systems, employees, company values, and industry-related GAAP and GAAS issues. <br>* Develop an understanding of the ITC audit automation approach and ERP tools. <br>* Assess risks and evaluate the client's internal control structure. <br>* Perform substantive tests and tests of internal controls to identify and resolve accounting or reporting issues. <br>*Prepare financial statements under prescribed formats.</li>\n</ul><h3>Required Skills and Qualifications </h3><ul>\n<li>Completion of 90+ credit hours towards a B.A. / B.S. degree or equivalent from an accredited university in Accounting or Finance. <br>* You must have passed your ACCA, CPA, CFA, or CIMA exam.</li>\n</ul><p>N.B: We kindly request you to complete a brief survey. Your feedback will help us enhance the candidate experience and ensure we attract the best talent.</p><p></p><p></p><p></p><p>Next Steps: Once you have completed the survey, please proceed with your job application as instructed.</p><p>Learn more:﻿﻿</p><p>Originally posted on <a ",
+   "pubDate": 1792533091,
+   "expiryDate": 1797717090,
+   "applicationLink": "https://himalayas.app/companies/itc-worldwide/jobs/advisory-accounting-audit-tax-payroll-5100104764?utm_source=api",
+   "guid": "https://himalayas.app/companies/itc-worldwide/jobs/advisory-accounting-audit-tax-payroll-5100104764"
+  },
+  {
+   "title": "Security & Privacy Consultant",
+   "excerpt": "📋 Taken en verantwoordelijkhedenVoor een organisatie in de Belgische energiemarkt zoeken we een medior Security & Privacy Consultant.",
+   "companyName": "EngiFlex",
+   "companySlug": "engiflex",
+   "companyLogo": "https://cdn-images.himalayas.app/rfvvga8ydwzvbire5qdaz5ny2o5j",
+   "employmentType": "Contractor",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Belgium"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Security-Consultant",
+    "Privacy-Consultant",
+    "Information-Security-Consultant",
+    "Data-Protection-Consultant",
+    "GRC-Consultant",
+    "Privacy-and-Security-Specialist",
+    "Privacy-Consulting",
+    "Data-Security-Consultant",
+    "Privacy-Advisory-Consultant",
+    "IT-Security-Consultant",
+    "Data-Privacy-Consultant",
+    "Cybersecurity-Consultant"
+   ],
+   "parentCategories": [],
+   "description": "<h4>📋 Taken en verantwoordelijkheden</h4><p>Voor een organisatie in de Belgische energiemarkt zoeken we een medior Security &amp; Privacy Consultant. In deze rol ondersteun je de Security Officer en de Data Protection Officer bij de dagelijkse uitvoering en verdere uitbouw van het information security- en privacybeleid.</p><ul>\n<li>Je ontwikkelt, organiseert en verzorgt initiatieven rond security- en privacy-awareness.</li>\n<li>Je ondersteunt de Security Officer en de Data Protection Officer in hun dagelijkse werkzaamheden.</li>\n<li>Je helpt bij het onderhouden en verder uitbouwen van het Information Security Management System en het Privacy Information Management System.</li>\n<li>Je voert security- en privacyrisicoanalyses uit en volgt de acties hierop op.</li>\n<li>Je draagt bij aan de voorbereiding en opvolging van interne en externe audits.</li>\n<li>Je adviseert projecten en operationele teams over security- en privacyvereisten.</li>\n<li>Je ondersteunt privacygerelateerde activiteiten, waaronder het opstellen van DPIA's, het onderhouden van registers van verwerkingsactiviteiten, het bewaken van de rechten van betrokkenen en het beheer van verwerkers.</li>\n<li>Je neemt deel aan het Security Incident Response Team en ondersteunt bij de analyse, behandeling, rapportering en evaluatie van securityincidenten.</li>\n<li>Je werkt mee aan securityprojecten en helpt bij de implementatie van security- en privacymaatregelen binnen Microsoft Azure en andere cloudomgevingen.</li>\n</ul>",
+   "pubDate": 1792533066,
+   "expiryDate": 1797717066,
+   "applicationLink": "https://himalayas.app/companies/engiflex/jobs/security-privacy-consultant?utm_source=api",
+   "guid": "https://himalayas.app/companies/engiflex/jobs/security-privacy-consultant"
+  },
+  {
+   "title": "Senior Data Engineer",
+   "excerpt": "WHO WE AREAdikteev is an AdTech company that helps mobile app publishers grow their revenue through targeted advertising.",
+   "companyName": "Adikteev",
+   "companySlug": "adikteev",
+   "companyLogo": "https://cdn-images.himalayas.app/fnkeqadtxhrxldxw1bo6cnf5tvgx",
+   "employmentType": "Full Time",
+   "minSalary": 80000,
+   "maxSalary": 90000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "EUR",
+   "locationRestrictions": [
+    "France"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Data-Engineer",
+    "Big-Data-Engineer",
+    "Data-Platform-Engineer",
+    "Senior-Data-Engineering",
+    "Senior-Data-Engineer-Jobs"
+   ],
+   "parentCategories": [
+    "Data Science"
+   ],
+   "description": "<h3>WHO WE ARE</h3><p><a href=\"https://himalayas.app/companies/adikteev\">Adikteev</a> is an AdTech company that helps mobile app publishers grow their revenue through targeted advertising. We deliver personalized ads that drive users to install an app or re-engage with one they've stopped using. </p><p>Our clients are mostly mobile gaming leaders but also span e-commerce, on-demand services, and entertainment apps. Recognized for 10+ years as one of the top mobile retargeting platforms, <a href=\"https://himalayas.app/companies/adikteev\">Adikteev</a> now operates globally from Paris, San Francisco, Barcelona and Seoul and has grown to over 120 employees.</p><p>Beyond the business, <a href=\"https://himalayas.app/companies/adikteev\">Adikteev</a> is consistently recognized as a great place to work. With an 18-nationality team, a 4.5-day work week, and a strong focus on inclusion, <a href=\"https://himalayas.app/companies/adikteev\">Adikteev</a> is a place where people genuinely stay.</p><img><h3>WHAT TEAM YOU WILL BE PART OF</h3><p>You would join the AI Automation team. They build the data infrastructure and AI foundations that power <a href=\"https://himalayas.app/companies/adikteev\">Adikteev</a>'s internal operations. Their mission spans three areas: modernising data pipelines and datalake architecture, improving internal and external reporting, and deploying agentic AI use cases across all departments.</p><h3>WHAT YOU WILL DO</h3><ul>\n<li><p>Keep our data infrastructure running s",
+   "pubDate": 1792532881,
+   "expiryDate": 1797716880,
+   "applicationLink": "https://himalayas.app/companies/adikteev/jobs/senior-data-engineer?utm_source=api",
+   "guid": "https://himalayas.app/companies/adikteev/jobs/senior-data-engineer"
+  }
+ ]
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss">
+  <channel>
+    <title>We Work Remotely: Remote jobs in design, programming, marketing and more</title>
+    <link>https://weworkremotely.com/categories/remote-programming-jobs.rss</link>
+    <description>We Work Remotely: Remote jobs in design, programming, marketing and more</description>
+    <language>en-US</language>
+    <ttl>60</ttl>
+    <item>
+      <title>Stripe: Abuse Research Engineer</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote from the US
+&lt;/p&gt;
+
+&lt;h2&gt;Who we are&lt;/h2&gt;
+&lt;h3&gt;About Stripe&lt;/h3&gt;
+&lt;p&gt;&lt;span&gt;Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to increase the GDP of the internet, and we have a staggering amount of work ahead. That means you have an unprecedented opportunity to put the global economy within everyone’s reach while doing the most important work of your career.&lt;/span&gt;&lt;/p&gt;
+&lt;h3&gt;About the team&lt;/h3&gt;
+&lt;p&gt;Abuse Research Group (ARG) handles proactive threat hunting and adversary behavior analysis across Stripe products. Rather than reacting to alerts, the team maps end-to-end fraud and abuse paths, validates novel attack vectors, and identifies product conditions that enable fraud. Using agentic automated testing and simulation tools, ARG translates research into actionable threat advisories, strategic control recommendations, and regression scenarios to systematically eliminate vulnerabilities.&lt;/p&gt;
+&lt;h2&gt;What you’ll do&lt;/h2&gt;
+&lt;p&gt;As an Abuse Research Engineer in the Abuse Research Group, you will play a critical role in safeguarding Stripe’s financial ecosystem by proactively hunting for advanced threats, dissecting complex fraud vec</description>
+      <pubDate>Sun, 04 Oct 2026 07:31:08 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/stripe-abuse-research-engineer</guid>
+      <link>https://weworkremotely.com/remote-jobs/stripe-abuse-research-engineer</link>
+    </item>
+<item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0161/6774/logo.gif" type="image/png"/>
+      <title>Yooli: FULL TIME: Software Engineer Position - React and Rest</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0161/6774/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Australia
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="http://yooli.co"&gt;http://yooli.co&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div&gt;&lt;strong&gt;Job description&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;We are seeking a highly skilled &lt;strong&gt;Senior Software Engineer&lt;/strong&gt; to join our team and contribute to the transformative tech evolution in healthcare.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;This critical role involves developing, integrating, and optimising our backend and database systems.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;You will work closely with our Chief Engineer and CTO to build and refine our software solutions, ensuring they remain at the cutting edge of innovation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;Your Role:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Develop and maintain robust backend services using &lt;strong&gt;NestJS&lt;/strong&gt; and &lt;strong&gt;Node.js&lt;/strong&gt;, ensuring top-tier performance and security.&lt;/li&gt;
+&lt;li&gt;Design and manage efficient &lt;strong&gt;REST API&lt;/strong&gt; endpoints to optimise interactions with our SQL database.&lt;/li&gt;
+&lt;li&gt;Collaborate with cross-functional teams to define, design, and deploy new features, focusing on back</description>
+      <pubDate>Wed, 05 Aug 2026 05:52:46 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1</guid>
+      <link>https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1</link>
+    </item>
+<item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0171/6508/logo.gif" type="image/png"/>
+      <title>Humane World for Animals: Web Designer, eCRM</title>
+      <region>Anywhere in the World</region>
+      <category>Front-End Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0171/6508/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Humane World for Animals
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://humaneworld.org"&gt;https://humaneworld.org&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;The general salary range for this full-time position is $80,000 – 115,000. Salary offers will be commensurate with experience, qualifications, skills, training and education.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;nbsp;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Humane World for Animals, a global leader in animal advocacy and protection, is seeking a Web Developer, eCRM to support Digital Marketing and other departments by providing front-end, global web development solutions for fundraising, advocacy engagement, and other strategic priorities — incorporating AI-assisted and agentic development tools to accelerate delivery while maintaining rigorous human oversight, quality, and security standards.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Responsibilities:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Collaborates regularly with Digital Marketing, Brand and Visuals, and IS teams to discuss project requirements and makes technical recommendations. Writes efficient code and maintains custom donation forms, advocacy forms, other webpages, and email templates. Incorporates best p</description>
+      <pubDate>Fri, 02 Oct 2026 17:39:45 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/humane-world-for-animals-web-designer-ecrm-1</guid>
+      <link>https://weworkremotely.com/remote-jobs/humane-world-for-animals-web-designer-ecrm-1</link>
+    </item>
+</channel></rss>
