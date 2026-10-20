@@ -121,3 +121,10 @@ export const api = {
   settings: () => get<SettingsDto>("/settings"),
   updateSettings: (patch: Partial<SettingsDto>) => request<SettingsDto>("PUT", "/settings", { body: patch }),
 };
+
+/** Screenshot and PDF URLs come from the API; in mock mode screenshots are drawn locally. */
+export async function resolveScreenshot(url: string): Promise<string> {
+  if (!MOCK) return url;
+  const { mockScreenshot } = await import("../mocks/screenshot");
+  return mockScreenshot(url);
+}

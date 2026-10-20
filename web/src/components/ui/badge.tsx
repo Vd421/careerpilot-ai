@@ -22,7 +22,7 @@ const dots: Record<Tone, string> = {
 
 export function Badge({ tone = "neutral", dot, className, children, ...p }: { tone?: Tone; dot?: boolean } & HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span className={cn("inline-flex h-5 items-center gap-1.5 whitespace-nowrap rounded-full px-2 text-[11.5px] font-medium", tones[tone], className)} {...p}>
+    <span className={cn("inline-flex h-5 items-center align-middle gap-1.5 whitespace-nowrap rounded-full px-2 text-[11.5px] font-medium", tones[tone], className)} {...p}>
       {dot && <span className={cn("size-1.5 rounded-full", dots[tone])} />}
       {children}
     </span>
