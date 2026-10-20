@@ -2,6 +2,7 @@ import "dotenv/config";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { seedAnswers } from "../src/answers/index.js";
 import { prisma } from "../src/db.js";
 import { PRIVATE_DIR, REPO_ROOT } from "../src/tailor/paths.js";
 
@@ -42,5 +43,8 @@ export async function seedDatabase(db: Db, opts: SeedOptions = {}): Promise<stri
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   seedDatabase(prisma)
     .then((notes) => notes.forEach((n) => console.log(n)))
+    // Answer bank from data/private/answers.json (missing file → warning, not a crash)
+    .then(() => seedAnswers())
+    .then(({ seeded, skipped }) => console.log(`Answer bank: ${seeded} seeded, ${skipped} skipped (empty)`))
     .finally(() => prisma.$disconnect());
 }
