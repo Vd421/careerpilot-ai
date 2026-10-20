@@ -78,7 +78,7 @@ export function applicationsRouter(deps: ApiDeps): Router {
     });
     await prisma.agentAction.create({
       data: {
-        type: "apply.submitted",
+        type: "application.marked_applied",
         jobId: app.jobId,
         applicationId: id,
         loopId: app.loopId,

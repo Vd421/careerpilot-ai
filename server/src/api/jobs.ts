@@ -165,7 +165,7 @@ export function jobsRouter(deps: ApiDeps): Router {
     } else if (status !== "pending_approval") {
       throw new HttpError(409, `Application is already ${status}`);
     }
-    await deps.enqueue(QUEUES.pushJob, { jobId: id }, { singletonKey: `push:${id}` });
+    await deps.enqueue(QUEUES.pushJob, { jobId: id, force: true }, { singletonKey: `push:${id}` });
     res.json({ applicationId: application.id });
   });
 

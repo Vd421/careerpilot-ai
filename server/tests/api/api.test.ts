@@ -201,7 +201,7 @@ describe("jobs", () => {
     const res = await api.post(`/api/jobs/${j.id}/push`).expect(200);
     const app = await prisma.application.findUniqueOrThrow({ where: { id: res.body.applicationId } });
     expect(app).toMatchObject({ status: "pending_approval", approvedAt: null, submitApprovedAt: null, idempotencyKey: `apply:${j.id}` });
-    expect(calls.enqueue).toEqual([["job.push", { jobId: j.id }]]);
+    expect(calls.enqueue).toEqual([["job.push", { jobId: j.id, force: true }]]);
     expect((await prisma.job.findUniqueOrThrow({ where: { id: j.id } })).stage).toBe("pushed");
 
     // pushing again reuses the same application
@@ -295,6 +295,7 @@ describe("applications", () => {
     const done = await prisma.application.findUniqueOrThrow({ where: { id: a.id } });
     expect(done).toMatchObject({ status: "applied", method: "manual" });
     expect(done.appliedAt).toBeInstanceOf(Date);
+    expect(await prisma.agentAction.count({ where: { type: "application.marked_applied" } })).toBe(1);
 
     const j2 = await mkJob({ title: "B" });
     const a2 = await mkApp(j2.id, "pending_approval");
