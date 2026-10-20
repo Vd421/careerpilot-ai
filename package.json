@@ -1,0 +1,19 @@
+{
+  "name": "careerpilot-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal job-hunting agent with a human in the loop",
+  "scripts": {
+    "setup": "npm install && npm --prefix server install && npm --prefix web install && npx --prefix server playwright install chromium && npm run db:up && npm --prefix server run db:deploy && npm --prefix server run db:seed",
+    "db:up": "docker compose up -d --wait",
+    "dev:all": "npm run db:up && concurrently -k -n api,worker,web -c cyan,magenta,green \"npm:dev:api\" \"npm:dev:worker\" \"npm:dev:web\"",
+    "dev:api": "npm --prefix server run dev",
+    "dev:worker": "npm --prefix server run worker",
+    "dev:web": "npm --prefix web run dev",
+    "test": "npm --prefix server test && npm --prefix web test",
+    "typecheck": "npm --prefix server run typecheck && npm --prefix web run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

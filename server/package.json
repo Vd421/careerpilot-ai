@@ -14,7 +14,11 @@
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",
     "resume:check": "tsx src/resume/check.ts",
-    "score": "tsx src/cli/score.ts"
+    "score": "tsx src/cli/score.ts",
+    "worker": "tsx watch src/worker.ts",
+    "typecheck": "tsc --noEmit",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.130.0",
