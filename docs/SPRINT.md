@@ -75,4 +75,11 @@ L0 contracts + schema + deps (this file) · L1 wire `app.ts` / `worker.ts` / `de
 L3 WALKTHROUGH.md, README, `.env.example`, ROADMAP, DECISIONS · L4 commits per task
 
 ## Status
-- [x] L0 (lead) Phase 0
+- [x] L0 contracts, schema, migration, deps
+- [x] Backend B1–B6 (127 tests)
+- [x] Integrations I1–I6 (139 tests)
+- [x] Frontend F1–F6 (30 tests)
+- [x] L1 `app.ts` / `index.ts` / `worker.ts` / `npm run dev:all`
+- [x] L2 integration QA on real data: location filter, hide filtered-out jobs, thinking off on Haiku/Sonnet, demo mode
+- [x] L3 README, WALKTHROUGH, ROADMAP, DECISIONS
+- [ ] Live dry run with Telegram (needs the bot token and you): see ROADMAP "Your next steps"
