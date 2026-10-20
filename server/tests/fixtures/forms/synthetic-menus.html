@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Synthetic: react-select style dropdown (menu opens on click)</title></head>
+<body><form id="application-form">
+<label for="first_name">First Name<span aria-hidden="true">*</span></label><input id="first_name" aria-required="true" type="text">
+<label for="email">Email<span aria-hidden="true">*</span></label><input id="email" aria-required="true" type="text">
+<label id="q1-label" for="q1">Do you need visa sponsorship?<span aria-hidden="true">*</span></label>
+<input id="q1" type="text" role="combobox" aria-required="true" aria-haspopup="true">
+<label id="q2-label" for="q2">Current city</label>
+<input id="q2" type="text" role="combobox" aria-haspopup="true">
+<label id="q3-label" for="q3">Country of residence</label>
+<input id="q3" type="text" role="combobox" aria-haspopup="true">
+<div id="menu"></div>
+<script>
+// Test-only shim: react-select renders [role=option] items only while the menu is open.
+document.getElementById("q1").addEventListener("click", function () {
+  document.getElementById("menu").innerHTML = '<div role="option">Yes</div><div role="option">No</div>';
+});
+document.getElementById("q3").addEventListener("click", function () {
+  var h = ""; for (var i = 0; i < 120; i++) h += '<div role="option">Country ' + i + "</div>";
+  document.getElementById("menu").innerHTML = h;
+});
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.getElementById("menu").innerHTML = ""; });
+</script></form></body></html>

@@ -31,6 +31,8 @@
 | 2026-10-21 | Notice filter drops only hard requirements ("immediate joiner", "join within N<60 days"; "15/30 days" uses the larger); soft wording → `notice_risk` tag | Don't lose jobs that merely prefer an early start |
 | 2026-10-21 | `excludeKeywords` match the job title only (whole words) | Descriptions mention "senior engineers" in normal text |
 | 2026-10-21 | Remotive fetched with one category request + local title filter | Remotive asks for max 4 calls/day |
+| 2026-10-21 | Pre-scan blocks only on a *visible* CAPTCHA; invisible reCAPTCHA/hCaptcha (on almost every Greenhouse/Ashby/Lever form) is allowed, and a challenge or missing confirmation at submit → `manual` | Otherwise every job would be manual; submit failures never retry |
+| 2026-10-21 | Standard fields (name, email, phone, resume, LinkedIn/GitHub/website) filled from `resume.json`, never asked | They're facts already in my resume |
 | Open (M5) | Gmail API vs IMAP/SMTP app password | Gmail OAuth refresh tokens expire every 7 days in Testing mode |
 
 ## Job sources: terms of use (checked 2026-10-21)
