@@ -1,3 +1,4 @@
+import { MOCK } from "@/lib/api";
 import { Activity, Briefcase, CircleHelp, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Plus, Repeat2, Search, Send, Settings } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
@@ -186,7 +187,7 @@ export function Sidebar() {
           </div>
           <div className={cn("min-w-0 flex-1 leading-tight transition-opacity duration-150", collapsed ? "opacity-0" : "opacity-100 delay-75")}>
             <div className="truncate text-[13px] font-medium">Vaibhav Dhir</div>
-            <div className="truncate text-[11.5px] text-muted">{status?.dryRun === false ? "Live mode" : "Dry run on"}</div>
+            <div className="truncate text-[11.5px] text-muted">{MOCK ? "Demo data" : status?.dryRun === false ? "Live mode" : "Dry run on"}</div>
           </div>
           {!collapsed && (
             <NavLink to="/settings" aria-label="Open settings" className="flex size-7 items-center justify-center rounded-[8px] text-muted hover:bg-hover hover:text-text">

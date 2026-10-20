@@ -22,3 +22,6 @@ Thumbs.db
 
 # prisma generated client
 server/src/generated/
+
+# web demo mode config (no secrets)
+!web/.env.demo
