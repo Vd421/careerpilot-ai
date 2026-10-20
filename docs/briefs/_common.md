@@ -39,7 +39,7 @@ The lead (Opus) planned this sprint. Read, in order:
   Run only your own test folders; the lead runs the full suite. Every task ships with tests.
 - Claude calls: `getClaude()` and `MODELS` from `src/ai/client.ts`; `messages.parse` + `zodOutputFormat` like
   scoreJob; cap `max_tokens`; log an `AiCall` row **before** validating output. `MODELS.better` = `claude-sonnet-5-5`
-  (thinking can't be "disabled" on it; leave `thinking` unset).
+  (its thinking-off mode is `thinking: { type: "between_tools" }`; Haiku 5.5 uses `{ type: "disabled" }`).
 - Missing keys (Telegram, Adzuna, RapidAPI) are expected. Code must start without them and log a clear "X not configured,
   skipping" instead of crashing.
 

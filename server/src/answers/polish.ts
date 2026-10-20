@@ -12,10 +12,11 @@ Do NOT add any fact, number, date, name, company, tool, URL or claim that is not
 Do NOT remove facts either. If the rough answer is already fine, return it unchanged.`;
 
 export const claudePolish: PolishModel = async (system, user) => {
-  // No `thinking` option: Sonnet 5.5 can't have it disabled, so we leave it unset.
   const response = await getClaude().messages.parse({
     model: MODELS.better,
     max_tokens: 800,
+    // Sonnet 5.5 can't use "disabled"; between_tools is its thinking-off mode. Grammar fixes don't need thinking.
+    thinking: { type: "between_tools" },
     system,
     messages: [{ role: "user", content: user }],
     output_config: { format: zodOutputFormat(polishSchema) },

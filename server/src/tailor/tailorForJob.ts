@@ -21,10 +21,12 @@ export class TailorCapError extends TailorError {
 export type TailorModel = (system: string, user: string) => Promise<ModelResult>;
 
 export const claudeTailorModel: TailorModel = async (system, user) => {
-  // No `thinking` option: Sonnet 5.5 can't have it disabled, so we leave it unset.
   const response = await getClaude().messages.parse({
     model: MODELS.better,
     max_tokens: 4000,
+    // Sonnet 5.5's thinking-off mode ("disabled" is a 400 on it). Thinking tokens would count against
+    // max_tokens; rewording real bullets doesn't need them, and the validator checks the result anyway.
+    thinking: { type: "between_tools" },
     system,
     messages: [{ role: "user", content: user }],
     output_config: { format: zodOutputFormat(tailoredResumeSchema) },

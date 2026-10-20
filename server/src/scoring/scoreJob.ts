@@ -17,6 +17,8 @@ export const claudeScoringModel: ScoringModel = async (system, user) => {
   const response = await getClaude().messages.parse({
     model: MODELS.cheap,
     max_tokens: 1024, // a score is short; cap it so a runaway answer can't cost much
+    // Haiku 5.5 thinks by default and thinking counts against max_tokens; a JSON grade doesn't need it
+    thinking: { type: "disabled" },
     system,
     messages: [{ role: "user", content: user }],
     output_config: { format: zodOutputFormat(scoreSchema) },

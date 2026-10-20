@@ -15,6 +15,7 @@ export const claudeClassifier: ClassifierModel = async (system, user) => {
   const response = await getClaude().messages.parse({
     model: MODELS.cheap,
     max_tokens: 100, // it only returns one short key
+    thinking: { type: "disabled" }, // or thinking would eat the 100-token budget
     system,
     messages: [{ role: "user", content: user }],
     output_config: { format: zodOutputFormat(classifierSchema) },
