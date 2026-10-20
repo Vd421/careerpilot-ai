@@ -124,9 +124,11 @@ function DrawerBody({ job }: { job: JobDetail }) {
       <div className="flex items-center justify-between gap-4 py-4">
         <div className="flex items-center gap-3">
           <StatusBadge status={job.status} />
-          <MatchBar value={job.matchScore} />
+          {job.matchScore != null && <MatchBar value={job.matchScore} />}
         </div>
-        <div className="num text-[13px] text-muted">{formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency)}</div>
+        {(job.salaryMin != null || job.salaryMax != null) && (
+          <div className="num text-[13px] text-muted">{formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency)}</div>
+        )}
       </div>
 
       {/* Actions. Approving or submitting is deliberately not here: that happens on Telegram. */}
@@ -204,7 +206,7 @@ function DrawerBody({ job }: { job: JobDetail }) {
           <Section title="Details">
             <dl className="grid grid-cols-[96px_1fr] gap-y-2 text-[13px]">
               <dt className="text-muted">Location</dt>
-              <dd>{job.location ?? "-"}{job.remote ? " (remote)" : ""}</dd>
+              <dd>{job.location ?? "-"}{job.remote && !/remote/i.test(job.location ?? "") ? " (remote)" : ""}</dd>
               <dt className="text-muted">Source</dt>
               <dd>{SOURCE_LABEL[job.source]}</dd>
               <dt className="text-muted">Apply via</dt>
