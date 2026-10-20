@@ -65,7 +65,7 @@ export default function JobsPage() {
         </div>
         <div className="w-40">
           <Select aria-label="Status" value={status} onChange={onFilter(setStatus)}>
-            <option value="">All statuses</option>
+            <option value="">All active</option>
             {ALL_STATUSES.map((s) => (
               <option key={s} value={s}>{STATUS_LABEL[s]}</option>
             ))}
@@ -95,13 +95,14 @@ export default function JobsPage() {
       </div>
 
       <Card className="overflow-hidden">
-        <table className="w-full table-fixed text-left text-[13px]">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[860px] table-fixed text-left text-[13px]">
           <colgroup>
-            <col style={{ width: "18%" }} />
+            <col style={{ width: "17%" }} />
             <col style={{ width: "21%" }} />
-            <col style={{ width: "13%" }} />
-            <col style={{ width: "13%" }} />
-            <col style={{ width: "9%" }} />
+            <col style={{ width: "11%" }} />
+            <col style={{ width: "11%" }} />
+            <col style={{ width: "14%" }} />
             <col style={{ width: "13%" }} />
             <col style={{ width: "13%" }} />
           </colgroup>
@@ -157,6 +158,7 @@ export default function JobsPage() {
             ))}
           </tbody>
         </table>
+        </div>
 
         {jobs.isError && <ErrorState onRetry={() => jobs.refetch()} />}
         {jobs.data && jobs.data.items.length === 0 && (
@@ -175,7 +177,7 @@ export default function JobsPage() {
               <Button size="iconSm" variant="ghost" aria-label="Previous page" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                 <ChevronLeft strokeWidth={1.5} />
               </Button>
-              <span className="num w-12 text-center">{page} / {pages}</span>
+              <span className="num min-w-12 whitespace-nowrap px-1 text-center">{page} / {pages}</span>
               <Button size="iconSm" variant="ghost" aria-label="Next page" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>
                 <ChevronRight strokeWidth={1.5} />
               </Button>

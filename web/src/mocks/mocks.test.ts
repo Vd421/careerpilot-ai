@@ -9,7 +9,10 @@ describe("mock api", () => {
 
   it("serves a realistic dataset", async () => {
     const jobs = await api.jobs({ pageSize: 100 });
-    expect(jobs.total).toBeGreaterThanOrEqual(30);
+    // The default list hides filtered-out jobs, like the real API
+    expect(jobs.items.some((j) => j.status === "filtered_out")).toBe(false);
+    const filteredOut = await api.jobs({ status: "filtered_out" });
+    expect(jobs.total + filteredOut.total).toBeGreaterThanOrEqual(30);
     const statuses = new Set(jobs.items.map((j) => j.status));
     expect(statuses.size).toBeGreaterThan(8);
     expect(new Set(jobs.items.map((j) => j.source)).size).toBeGreaterThan(6);

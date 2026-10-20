@@ -105,7 +105,7 @@ route("GET", "/overview", (): OverviewResponse => {
   const replied = apps.filter((a) => REPLY_SET.includes(a.status) || a.status === "rejected").length;
   return {
     stats: {
-      discovered: db.jobs.length,
+      discovered: db.jobs.filter((j) => j.status !== "filtered_out").length,
       applied,
       awaitingMe: apps.filter((a) => a.status === "pending_approval").length + db.questions.filter((q) => q.status !== "answered").length,
       replies: apps.filter((a) => REPLY_SET.includes(a.status)).length,
@@ -124,13 +124,14 @@ route("GET", "/overview", (): OverviewResponse => {
 });
 
 // ---- jobs -------------------------------------------------------------------
-route("GET", "/jobs/recent", () => [...db.jobs].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 10).map(toListItem));
+route("GET", "/jobs/recent", () => [...db.jobs].filter((j) => j.status !== "filtered_out").sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 10).map(toListItem));
 
 route("GET", "/jobs", (_m, q) => {
   const page = num(q.page, 1);
   const pageSize = num(q.pageSize, 50);
   const needle = String(q.q ?? "").toLowerCase();
   const items = db.jobs
+    .filter((j) => (q.status || q.stage ? true : j.status !== "filtered_out"))
     .filter((j) => !q.status || j.status === q.status)
     .filter((j) => !q.stage || j.status === q.stage)
     .filter((j) => !q.source || j.source === q.source)

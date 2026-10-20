@@ -53,7 +53,12 @@ export function jobsRouter(deps: ApiDeps): Router {
   const r = Router();
 
   r.get("/jobs/recent", async (_req, res) => {
-    const rows = await prisma.job.findMany({ orderBy: { id: "desc" }, take: 10, include: jobListInclude });
+    const rows = await prisma.job.findMany({
+      where: { stage: { not: "filtered_out" } },
+      orderBy: { id: "desc" },
+      take: 10,
+      include: jobListInclude,
+    });
     res.json(rows.map(toJobListItem));
   });
 
@@ -61,6 +66,8 @@ export function jobsRouter(deps: ApiDeps): Router {
     const q = parse(listQuery, req.query);
     const where: Prisma.JobWhereInput = {};
     if (q.stage) where.stage = q.stage;
+    // Filtered-out jobs are most of what boards return; hide them unless asked for by stage/status.
+    else if (!q.status) where.stage = { not: "filtered_out" };
     if (q.loopId) where.loopId = q.loopId;
     if (q.source) where.source = q.source;
     if (q.q) {

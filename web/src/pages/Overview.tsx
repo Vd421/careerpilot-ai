@@ -11,7 +11,7 @@ import { ActivityRow } from "@/components/ActivityRow";
 import { Badge } from "@/components/ui/badge";
 
 const STATS = [
-  { key: "discovered", label: "Discovered", icon: Briefcase, hint: "jobs found so far" },
+  { key: "discovered", label: "Discovered", icon: Briefcase, hint: "passed your filters" },
   { key: "applied", label: "Applied", icon: Send, hint: "applications submitted" },
   { key: "awaitingMe", label: "Awaiting me", icon: Inbox, hint: "approvals and questions" },
   { key: "replies", label: "Replies", icon: MessageSquareReply, hint: "recruiters who responded" },

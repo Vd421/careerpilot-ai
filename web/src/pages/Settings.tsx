@@ -135,7 +135,7 @@ function SettingsForm({ settings }: { settings: SettingsDto }) {
               {(id) => <Input id={id} inputMode="numeric" value={form.noticeDays} onChange={(e) => setF("noticeDays", e.target.value)} aria-invalid={!!errors.noticeDays} className="num text-right" />}
             </Field>
           </Row>
-          <Row title="Maximum years required" hint="Drop jobs asking for more experience than this.">
+          <Row title="Maximum years required" hint="Flag jobs asking for more experience than this.">
             <Field label="Max years" error={errors.maxYearsRequired} className="w-28 [&>label]:sr-only">
               {(id) => <Input id={id} inputMode="numeric" value={form.maxYearsRequired} onChange={(e) => setF("maxYearsRequired", e.target.value)} aria-invalid={!!errors.maxYearsRequired} className="num text-right" />}
             </Field>

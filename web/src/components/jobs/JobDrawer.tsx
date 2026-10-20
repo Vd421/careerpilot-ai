@@ -173,13 +173,13 @@ function DrawerBody({ job }: { job: JobDetail }) {
               <div>
                 <p className="mb-1.5 text-[12.5px] text-muted">Matched</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {job.matchedSkills.length ? job.matchedSkills.map((s) => <Badge key={s} tone="success">{s}</Badge>) : <span className="text-[13px] text-muted">None yet</span>}
+                  {job.matchedSkills.length ? job.matchedSkills.map((s) => <Badge key={s} tone="success">{s}</Badge>) : <span className="text-[13px] text-muted">{job.matchScore == null ? "Not scored yet" : "None"}</span>}
                 </div>
               </div>
               <div>
                 <p className="mb-1.5 text-[12.5px] text-muted">Missing</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {job.missingSkills.length ? job.missingSkills.map((s) => <Badge key={s} tone="warning">{s}</Badge>) : <span className="text-[13px] text-muted">Nothing major</span>}
+                  {job.missingSkills.length ? job.missingSkills.map((s) => <Badge key={s} tone="warning">{s}</Badge>) : <span className="text-[13px] text-muted">{job.matchScore == null ? "Not scored yet" : "Nothing major"}</span>}
                 </div>
               </div>
             </div>

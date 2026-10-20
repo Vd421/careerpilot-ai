@@ -70,7 +70,7 @@ export function miscRouter(deps: ApiDeps): Router {
 
   r.get("/overview", async (_req, res) => {
     const [discovered, scored, pushed, approved, applied, replied] = await Promise.all([
-      prisma.job.count(),
+      prisma.job.count({ where: { stage: { not: "filtered_out" } } }), // passed my filters
       prisma.job.count({ where: { scoredAt: { not: null } } }),
       prisma.application.count(),
       prisma.application.count({ where: { approvedAt: { not: null } } }),
