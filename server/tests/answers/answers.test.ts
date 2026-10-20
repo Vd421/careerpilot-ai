@@ -109,6 +109,16 @@ describe("matchAnswer", () => {
     expect(m?.via).toBe("pattern");
   });
 
+  it("free text: a pattern must cover most of the question (a stray 'LinkedIn' in a longer question is not a match)", async () => {
+    await bank("linkedin", ["linkedin"], "https://linkedin.com/in/me");
+    const classifier = vi.fn(async () => modelResult({ key: "none" }));
+    expect(await matchAnswer("How did you hear about us? LinkedIn?", "text", [], { classifier })).toBeNull();
+    expect(classifier).toHaveBeenCalledTimes(1); // it went to the classifier, which said none
+    expect((await matchAnswer("LinkedIn profile URL", "text", [], { classifier }))?.value).toBe("https://linkedin.com/in/me");
+    expect((await matchAnswer("LinkedIn: please paste your profile link here", "text", [], { classifier }))?.via).toBe("pattern"); // starts with the pattern
+    expect(classifier).toHaveBeenCalledTimes(1);
+  });
+
   it("does not match inside another word ('capacity' vs 'city')", async () => {
     await bank("city", ["city"], "Bengaluru");
     expect(await matchAnswer("Have you worked here in any capacity?", "text", [], { classifier: async () => modelResult({ key: "none" }) })).toBeNull();

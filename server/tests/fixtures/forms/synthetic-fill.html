@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Synthetic: Greenhouse-style form that can be filled and submitted</title></head>
+<body><main>
+<h1>Backend Engineer (synthetic)</h1>
+<form id="application-form" onsubmit="return false">
+<label for="first_name">First Name<span aria-hidden="true">*</span></label><input id="first_name" aria-required="true" type="text">
+<label for="last_name">Last Name<span aria-hidden="true">*</span></label><input id="last_name" aria-required="true" type="text">
+<label for="email">Email<span aria-hidden="true">*</span></label><input id="email" aria-required="true" type="text">
+<div role="group" aria-labelledby="upload-label-resume" aria-required="true">
+  <div id="upload-label-resume">Resume/CV<span>*</span></div>
+  <label for="resume">Attach</label><input id="resume" type="file">
+</div>
+<label id="q_sponsor-label" for="q_sponsor">Do you require sponsorship?<span aria-hidden="true">*</span></label>
+<input id="q_sponsor" type="text" role="combobox" aria-required="true" aria-haspopup="true" autocomplete="off">
+<fieldset><legend>Willing to relocate?<span>*</span></legend>
+  <label><input type="radio" name="q_reloc" value="Yes"> Yes</label>
+  <label><input type="radio" name="q_reloc" value="No"> No</label>
+</fieldset>
+<label for="q_consent">I agree to the privacy policy<span aria-hidden="true">*</span></label><input type="checkbox" id="q_consent" aria-required="true">
+<label for="q_why">Why do you want to work here?<span aria-hidden="true">*</span></label><textarea id="q_why" aria-required="true"></textarea>
+<div id="menu"></div>
+<button type="submit" id="go">Submit application</button>
+</form></main>
+<script>
+// Test-only shim for the parts a real page does with React.
+var menu = document.getElementById("menu"), sponsor = document.getElementById("q_sponsor");
+function render(filter) {
+  menu.innerHTML = "";
+  ["Yes", "No"].filter(function (o) { return !filter || o.toLowerCase().indexOf(filter.toLowerCase()) >= 0; }).forEach(function (o) {
+    var d = document.createElement("div"); d.setAttribute("role", "option"); d.textContent = o;
+    d.onclick = function () { sponsor.value = o; menu.innerHTML = ""; }; menu.appendChild(d);
+  });
+}
+sponsor.addEventListener("click", function () { render(""); });
+sponsor.addEventListener("input", function () { render(sponsor.value); });
+document.getElementById("go").addEventListener("click", function () {
+  var ok = document.getElementById("first_name").value && document.getElementById("email").value &&
+    document.getElementById("resume").files.length && sponsor.value && document.getElementById("q_consent").checked &&
+    document.querySelector('input[name="q_reloc"]:checked') && document.getElementById("q_why").value;
+  if (!ok || location.hash === "#nothanks") return;
+  if (location.hash === "#captcha") {
+    var c = document.createElement("div"); c.className = "g-recaptcha";
+    c.innerHTML = '<iframe title="reCAPTCHA" src="about:blank#https://www.google.com/recaptcha/api2/bframe" width="304" height="78"></iframe>';
+    document.body.appendChild(c); return;
+  }
+  document.body.innerHTML = "<h1>Thank you for applying</h1><p>Your application has been submitted.</p>";
+});
+</script></body></html>

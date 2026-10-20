@@ -18,7 +18,7 @@ export const EXTRACT_FIELDS_SCRIPT = String.raw`(platform) => {
     const type = (el.getAttribute("type") || "").toLowerCase();
     if (["hidden", "submit", "button", "image", "reset", "search", "password"].includes(type)) return true;
     if (el.getAttribute("aria-hidden") === "true") return true; // react-select's shadow "required" input
-    if (/iti__|iti-\d/.test((el.className || "") + " " + (el.id || ""))) return true; // phone-country widget internals
+    if (/iti__(?!tel-input)|^iti-\d/.test((el.className || "") + " " + (el.id || ""))) return true; // phone-country widget internals (the number input itself, iti__tel-input, is a real field)
     if (/g-recaptcha-response|h-captcha-response/.test(el.name || "")) return true;
     return false;
   };

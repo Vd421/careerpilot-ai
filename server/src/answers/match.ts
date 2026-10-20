@@ -48,6 +48,15 @@ function usable(value: string, fieldType: FieldType, options: string[]): string 
   return value;
 }
 
+// A pattern is only trusted when it covers most of the question. Otherwise "How did you hear about us? LinkedIn?"
+// would get my LinkedIn URL. Fixed-choice fields are already protected by option mapping, so only free text is strict.
+export function patternApplies(q: string, pattern: string, fieldType: FieldType): boolean {
+  if (!containsPhrase(q, pattern)) return false;
+  if (fieldType === "select" || fieldType === "radio") return true;
+  const words = (t: string) => (t ? t.split(" ").length : 0);
+  return q.startsWith(pattern) || words(q) <= words(pattern) + 3;
+}
+
 // 1) exact normalized match / phrase containment among approved reusable answers
 // 2) else a cheap model that may only PICK a saved key (it never sees or writes answers)
 export async function matchAnswer(
@@ -70,7 +79,7 @@ export async function matchAnswer(
   let best: { a: Answer; len: number } | null = null;
   for (const a of bank) {
     for (const p of [a.questionText, ...a.patterns]) {
-      if (containsPhrase(q, p) && (!best || p.length > best.len)) best = { a, len: p.length };
+      if (patternApplies(q, p, fieldType) && (!best || p.length > best.len)) best = { a, len: p.length };
     }
   }
   if (best) {

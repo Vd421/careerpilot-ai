@@ -56,7 +56,7 @@ export function formUrlFor(url: string, platform: ApplyPlatform): string {
 // Prescan
 // ---------------------------------------------------------------------------
 
-interface RawControl {
+export interface RawControl {
   name: string;
   label: string;
   type: FieldType | "combobox";
@@ -72,12 +72,14 @@ export interface PrescanOptions {
   readMenus?: boolean; // open custom dropdowns to read their options (default true)
 }
 
-const FORM_READY_SELECTOR: Record<Exclude<ApplyPlatform, "other">, string> = {
+export const FORM_READY_SELECTOR: Record<Exclude<ApplyPlatform, "other">, string> = {
   greenhouse: "#application-form, #application_form, form input",
   lever: "#application-form, li.application-question",
   ashby: ".ashby-application-form-field-entry, input[type=file]",
 };
 const MAX_MENU_OPTIONS = 80; // a country list is not a question I can answer from the bank
+
+export const OPEN_OPTION = '[role="option"]:visible:not(.iti__country)';
 
 // Opens a react-select style dropdown, reads its options, closes it. It types nothing.
 async function readMenuOptions(page: Page, id: string): Promise<string[]> {
@@ -93,8 +95,12 @@ async function readMenuOptions(page: Page, id: string): Promise<string[]> {
   }
 }
 
+export async function extractControls(page: Page, platform: ApplyPlatform): Promise<RawControl[]> {
+  return (await page.evaluate(`(${EXTRACT_FIELDS_SCRIPT})(${JSON.stringify(platform)})`)) as RawControl[];
+}
+
 export async function prescanPage(page: Page, platform: ApplyPlatform, opts: { readMenus?: boolean } = {}): Promise<PrescanResult> {
-  const raw = (await page.evaluate(`(${EXTRACT_FIELDS_SCRIPT})(${JSON.stringify(platform)})`)) as RawControl[];
+  const raw = await extractControls(page, platform);
   const fields: FormField[] = [];
   for (const c of raw) {
     let type: FieldType = c.type === "combobox" ? "select" : c.type;
