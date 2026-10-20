@@ -16,6 +16,14 @@ The lead (Opus) planned this sprint. Read, in order:
 - Every agent step writes an `AgentAction` row.
 - Secrets only from `process.env`. Never hard-code keys. Personal data lives in `data/private/` (gitignored).
 
+## Unattended run (the user is asleep)
+- **Do not open, read or print** anything in `data/private/` or any `.env` file. Tests use `data/*.example.json`.
+- **No paid API calls.** Never call the real Claude API, RapidAPI or Adzuna. Free public endpoints (job board JSON,
+  RSS, ToS pages) are fine, a handful of requests total, only to save fixtures or verify a URL.
+- Don't log in anywhere, don't create accounts, don't send messages/emails, don't push to git.
+- Don't wait on answers that block you: make the most reasonable choice, note it in your report, keep going.
+- Don't start long-running servers and leave them; anything you start for a check, stop it.
+
 ## How we work
 - Only edit files in **your** folders (listed in your brief). Need something elsewhere (contracts, `app.ts`, `package.json`,
   another teammate's module)? Message the lead with SendMessage (`to: "main"`, that is the lead) — exact change + why. Don't wait idle:
@@ -25,8 +33,10 @@ The lead (Opus) planned this sprint. Read, in order:
 - Match the existing style: ESM, `.js` import suffixes, small files, short "why" comments, Zod at boundaries,
   model/IO calls injected so tests use fakes (see `ScoringModel` in scoreJob.ts).
 - Tests: Vitest in `server/tests/<your-module>/`. Fakes for Claude, Telegram, Playwright and HTTP — **no network and no
-  API cost in tests**. DB tests call `resetDb()` from `tests/helpers/resetDb.ts` in `beforeEach`. Run `npm test` from
-  `server/` (Docker Postgres is up). Every task ships with tests.
+  API cost in tests**. DB tests call `resetDb()` from `tests/helpers/resetDb.ts` in `beforeEach`. Run tests from
+  `server/` with **your own test DB**: backend `TEST_DB_NAME=careerpilot_test_backend npx vitest run tests/<dir>`,
+  integrations `TEST_DB_NAME=careerpilot_test_integrations npx vitest run tests/<dir>` (Docker Postgres is up).
+  Run only your own test folders; the lead runs the full suite. Every task ships with tests.
 - Claude calls: `getClaude()` and `MODELS` from `src/ai/client.ts`; `messages.parse` + `zodOutputFormat` like
   scoreJob; cap `max_tokens`; log an `AiCall` row **before** validating output. `MODELS.better` = `claude-sonnet-5-5`
   (thinking can't be "disabled" on it; leave `thinking` unset).
