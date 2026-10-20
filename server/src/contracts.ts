@@ -190,6 +190,7 @@ export interface LoopFilters {
   salaryFloors?: SalaryFloors;
   remoteOnly?: boolean;
   excludeKeywords?: string[]; // e.g. ["senior", "staff", "lead"]
+  locations?: string[]; // filled from Loop.locations by the pipeline, not stored in filters JSON
 }
 
 export interface FilterResult {

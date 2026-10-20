@@ -18,7 +18,8 @@
     "worker": "tsx watch src/worker.ts",
     "typecheck": "tsc --noEmit",
     "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "jobs:refilter": "tsx src/cli/refilter.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.130.0",

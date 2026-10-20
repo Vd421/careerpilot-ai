@@ -137,11 +137,44 @@ describe("loop filters", () => {
     const loop = { remoteOnly: true };
     expect(applyFilters({ ...base, remote: false }, settings, loop).keep).toBe(false);
     expect(applyFilters({ ...base, remote: true }, settings, loop).keep).toBe(true);
-    expect(applyFilters({ ...base, remote: null }, settings, loop).tags).toContain("remote_unknown");
+    expect(applyFilters({ ...base, remote: null, location: null }, settings, loop).tags).toContain("remote_unknown");
+    // A named city with no remote flag means on-site
+    expect(applyFilters({ ...base, remote: null, location: "San Francisco" }, settings, loop).keep).toBe(false);
     expect(applyFilters({ ...base, remote: null, location: "Remote - India" }, settings, loop).tags).not.toContain(
       "remote_unknown",
     );
   });
+  describe("loop locations", () => {
+    const at = (location: string | null, remote: boolean | null, locations: string[]) =>
+      applyFilters({ ...base, location, remote }, settings, { locations });
+
+    it("keeps jobs in one of my places, including cities inside a country", () => {
+      expect(at("Bengaluru, Karnataka", null, ["India"]).keep).toBe(true);
+      expect(at("Bangalore", false, ["Bengaluru"]).keep).toBe(true);
+      expect(at("Gurgaon", null, ["India", "Remote"]).keep).toBe(true);
+    });
+    it("drops on-site jobs elsewhere", () => {
+      const r = at("San Francisco", null, ["India", "Remote"]);
+      expect(r.keep).toBe(false);
+      expect(r.reasons[0]).toMatch(/not in this loop's locations/);
+    });
+    it("keeps open remote, drops remote limited to another region", () => {
+      expect(at("Remote", true, ["Remote"]).keep).toBe(true);
+      expect(at("Remote - Worldwide", null, ["Remote"]).keep).toBe(true);
+      expect(at("Remote (APAC)", true, ["Remote"]).keep).toBe(true);
+      expect(at("Remote - India", true, ["Remote"]).keep).toBe(true);
+      expect(at("Remote - United States", true, ["Remote"]).keep).toBe(false);
+      expect(at("San Francisco", true, ["Remote"]).reasons[0]).toMatch(/Remote only in San Francisco/);
+    });
+    it("unknown location is kept and tagged", () => {
+      expect(at(null, null, ["India"]).tags).toContain("location_unknown");
+      expect(at("N/A", null, ["India"]).keep).toBe(true);
+    });
+    it("no loop locations = no location check", () => {
+      expect(at("San Francisco", false, []).keep).toBe(true);
+    });
+  });
+
   it("excludeKeywords matches whole words in the title", () => {
     const loop = { excludeKeywords: ["intern", "c++"] };
     expect(applyFilters({ ...base, title: "Software Intern" }, settings, loop).keep).toBe(false);

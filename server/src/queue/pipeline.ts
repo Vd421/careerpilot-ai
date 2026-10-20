@@ -63,7 +63,7 @@ export async function runLoop(loopId: number, deps: PipelineDeps): Promise<LoopR
 
   const settings = await getSettings();
   const filterSettings = toFilterSettings(settings);
-  const loopFilters = (loop.filters ?? {}) as LoopFilters;
+  const loopFilters = { ...((loop.filters ?? {}) as LoopFilters), locations: loop.locations };
   const enabledMap = (settings.sources ?? {}) as Record<string, boolean>;
   const sources = (loop.sources as SourceId[]).filter((s) => enabledMap[s] !== false);
 

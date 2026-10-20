@@ -1,4 +1,5 @@
 import type { ApplyFilters, FilterSettings, LoopFilters } from "../contracts.js";
+import { checkLocation } from "./location.js";
 import { checkNotice } from "./notice.js";
 import { checkSalary } from "./salary.js";
 import { maxYearsRequired, seniorTitleWord } from "./seniority.js";
@@ -37,8 +38,15 @@ export const applyFilters: ApplyFilters = (job, settings, loop) => {
   // Loop filters
   if (loop?.remoteOnly) {
     if (job.remote === false) reasons.push("Not remote");
-    else if (job.remote === null && !/remote/i.test(job.location ?? "")) tags.push("remote_unknown");
+    else if (job.remote === null && !/remote/i.test(job.location ?? "")) {
+      // No remote flag: a named city means on-site; no location at all stays as "unknown"
+      if (job.location?.trim()) reasons.push(`Not remote (${job.location.trim()})`);
+      else tags.push("remote_unknown");
+    }
   }
+  const loc = checkLocation(job.location, job.remote, loop?.locations);
+  if (loc.drop && !reasons.some((r) => r.startsWith("Not remote"))) reasons.push(loc.drop);
+  if (loc.tag) tags.push(loc.tag);
   for (const kw of loop?.excludeKeywords ?? []) {
     if (!kw.trim()) continue;
     // Title only: descriptions say "work with senior engineers" and would drop good jobs.
