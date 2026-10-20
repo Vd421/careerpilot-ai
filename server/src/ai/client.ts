@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 // All model names live here, so switching models is a one-line change.
 export const MODELS = {
-  cheap: "claude-haiku-4-5", // scoring / classification
+  cheap: "claude-haiku-5-5", // scoring / classification
   better: "claude-sonnet-5-5", // tailoring / polishing
 } as const;
 
