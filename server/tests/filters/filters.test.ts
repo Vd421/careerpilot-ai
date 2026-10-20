@@ -69,6 +69,11 @@ describe("notice", () => {
     expect(checkNotice("joining within 2 weeks", 60).drop).toBeTruthy();
     expect(checkNotice("join in 1 month", 60).drop).toBeTruthy();
   });
+  it("reads 'N/M days' and 'N-M days' using the larger number", () => {
+    expect(checkNotice("join within 15/30 days", 60).drop).toBeTruthy();
+    expect(checkNotice("joining within 15-30 days", 60).drop).toBeTruthy();
+    expect(checkNotice("join within 30/90 days", 60).drop).toBeNull();
+  });
   it("keeps windows >= my notice", () => {
     expect(checkNotice("join within 60 days", 60).drop).toBeNull();
     expect(checkNotice("join within 3 months", 60).drop).toBeNull();

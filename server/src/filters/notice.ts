@@ -17,10 +17,12 @@ export function checkNotice(description: string, noticeDays: number): NoticeVerd
   }
 
   // "join within 30 days", "joining in 2 weeks"
-  for (const m of t.matchAll(/\bjoin(?:ing)?\s+(?:within|in)\s+(?:the\s+next\s+)?(\d+)\s*(days?|weeks?|months?)/g)) {
-    const days = toDays(Number(m[1]), m[2]);
+  for (const m of t.matchAll(/\bjoin(?:ing)?\s+(?:within|in)\s+(?:the\s+next\s+)?(\d+)(?:\s*[/-]\s*(\d+))?\s*(days?|weeks?|months?)/g)) {
+    // "15/30 days" or "15-30 days": take the larger number (the most lenient reading)
+    const n = Math.max(Number(m[1]), Number(m[2] ?? 0));
+    const days = toDays(n, m[3]);
     if (days < noticeDays) {
-      return { drop: `Wants joining within ${m[1]} ${m[2]} (my notice is ${noticeDays} days)`, risk: false };
+      return { drop: `Wants joining within ${n} ${m[3]} (my notice is ${noticeDays} days)`, risk: false };
     }
   }
 
