@@ -7,6 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// Status strings are validated in code against the lists in src/contracts.ts
+// (JOB_STAGES, APPLICATION_STATUSES, ...), not as Postgres enums, so adding a
+// status never needs a migration.
+
 model Job {
   id          Int      @id @default(autoincrement())
   company     String
@@ -14,6 +18,25 @@ model Job {
   url         String?
   description String
   createdAt   DateTime @default(now())
+
+  // Where it came from
+  source      String   @default("manual") // SourceId in contracts.ts
+  externalId  String?
+  dedupeKey   String?  @unique // normalized company + title + url
+  location    String?
+  remote      Boolean?
+  postedAt    DateTime?
+  applyPlatform String @default("other") // ApplyPlatform: greenhouse | lever | ashby | other
+
+  // Salary (normalized to a yearly amount in `salaryCurrency`)
+  salaryMin      Int?
+  salaryMax      Int?
+  salaryCurrency String?
+
+  // Pipeline
+  stage  String   @default("discovered") // JobStage
+  tags   String[] @default([]) // e.g. salary_unknown, notice_risk
+  filterReasons String[] @default([]) // why it was filtered out
 
   // Filled in by scoring (null until scored)
   matchScore    Int?
@@ -23,17 +46,197 @@ model Job {
   redFlags      Json?
   scoredAt      DateTime?
 
-  aiCalls AiCall[]
+  loopId Int?
+  loop   Loop? @relation(fields: [loopId], references: [id], onDelete: SetNull)
+
+  aiCalls        AiCall[]
+  resumeVersions ResumeVersion[]
+  application    Application?
+  actions        AgentAction[]
+
+  @@index([stage])
+  @@index([loopId])
 }
 
 // One row per Claude API call, so we always know what the AI costs.
 model AiCall {
   id           Int      @id @default(autoincrement())
-  purpose      String // "score", later "tailor", "polish"...
+  purpose      String // "score" | "tailor" | "polish" | "match_question"
   model        String
   inputTokens  Int
   outputTokens Int
   jobId        Int?
   job          Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
   createdAt    DateTime @default(now())
+}
+
+// A base resume file (data/private/resumes/<file>). Loops rotate between variants for A/B.
+model ResumeVariant {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g. "A - AI-first", "B - fullstack-first"
+  filePath  String // relative to repo root, e.g. data/private/resume.json
+  createdAt DateTime @default(now())
+
+  versions     ResumeVersion[]
+  applications Application[]
+}
+
+// A resume tailored for one job. `tailored` holds bullet ids + rewrites (TailoredResume).
+model ResumeVersion {
+  id        Int      @id @default(autoincrement())
+  jobId     Int
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  variantId Int?
+  variant   ResumeVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  tailored  Json
+  pdfPath   String?
+  createdAt DateTime @default(now())
+
+  applications Application[]
+}
+
+model Application {
+  id     Int    @id @default(autoincrement())
+  jobId  Int    @unique // one application per job
+  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status String @default("pending_approval") // ApplicationStatus
+  method String? // "auto" | "manual"
+
+  resumeVersionId Int?
+  resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id], onDelete: SetNull)
+  resumeVariantId Int?
+  resumeVariant   ResumeVariant? @relation(fields: [resumeVariantId], references: [id], onDelete: SetNull)
+  loopId Int?
+  loop   Loop? @relation(fields: [loopId], references: [id], onDelete: SetNull)
+
+  // Safety: the two human taps, recorded for THIS application
+  approvedAt        DateTime? // [Apply] tap
+  submitApprovedAt  DateTime? // [Submit] tap on the "ready to submit" card
+  submitLockedAt    DateTime? // set atomically right before clicking submit; never cleared
+  idempotencyKey    String    @unique // "apply:<jobId>"
+
+  filledAt       DateTime?
+  appliedAt      DateTime?
+  screenshotPath String?
+  manualReason   String? // captcha | unknown_form | unsupported_platform | unanswered | error
+  lastError      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  questions Question[]
+  actions   AgentAction[]
+  telegramMessages TelegramMessage[]
+
+  @@index([status])
+}
+
+// A form field found by pre-scan.
+model Question {
+  id            Int     @id @default(autoincrement())
+  applicationId Int
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  text          String
+  fieldName     String // the form's input name/id, used by the filler
+  fieldType     String // FieldType: text | textarea | select | radio | checkbox | file
+  options       String[] @default([])
+  required      Boolean
+  status        String  @default("pending") // pending | asked | answered
+  askedVia      String? // bank | telegram | dashboard
+  answerId      Int?
+  answer        Answer? @relation(fields: [answerId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+
+  telegramMessages TelegramMessage[]
+
+  @@index([status])
+}
+
+// The answer bank. Only rows with approved = true are ever used to fill a form.
+model Answer {
+  id             Int      @id @default(autoincrement())
+  key            String?  @unique // stable key for seeded facts, e.g. "notice_period"
+  questionText   String // normalized
+  patterns       String[] @default([]) // extra normalized phrasings that map here
+  rawAnswer      String // exactly what I typed
+  polishedAnswer String?
+  approved       Boolean  @default(false)
+  reusable       Boolean  @default(false)
+  tags           String[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  questions Question[]
+}
+
+// The activity log. Every agent step writes one.
+model AgentAction {
+  id            Int      @id @default(autoincrement())
+  type          String // AgentActionType
+  jobId         Int?
+  job           Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  applicationId Int?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  loopId        Int?
+  detail        Json     @default("{}")
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type])
+}
+
+model TelegramMessage {
+  id            Int      @id @default(autoincrement())
+  direction     String // in | out
+  text          String
+  chatMessageId Int?
+  questionId    Int?
+  question      Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  applicationId Int?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+}
+
+// A saved search that runs on a schedule (LoopCV-style campaign).
+model Loop {
+  id               Int       @id @default(autoincrement())
+  name             String    @unique
+  keywords         String[]
+  locations        String[]
+  sources          String[] // SourceId[]
+  filters          Json      @default("{}") // LoopFilters
+  resumeVariantIds Int[]     @default([])
+  schedule         String    @default("0 */6 * * *") // cron
+  active           Boolean   @default(true)
+  lastRunAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  jobs         Job[]
+  applications Application[]
+}
+
+// Single row (id = 1).
+model Settings {
+  id               Int      @id @default(1)
+  salaryFloors     Json     @default("{\"INR\":1200000,\"USD\":30000,\"EUR\":28000,\"GBP\":24000}") // yearly
+  noticeDays       Int      @default(60)
+  matchThreshold   Int      @default(65)
+  maxYearsRequired Int      @default(2) // red flag above this
+  sources          Json     @default("{}") // { [SourceId]: boolean }, missing = on
+  dailyCap         Int      @default(15) // clamped to 15 in code
+  maxScoresPerDay  Int      @default(60)
+  maxTailorsPerDay Int      @default(20)
+  dryRun           Boolean  @default(true)
+  telegramChatId   String?
+  updatedAt        DateTime @updatedAt
+}
+
+// Cache of source fetches, so we never hit an API more often than its ToS allows.
+model SourceFetch {
+  id        Int      @id @default(autoincrement())
+  source    String
+  queryKey  String
+  fetchedAt DateTime @default(now())
+  count     Int
+
+  @@index([source, queryKey, fetchedAt])
 }

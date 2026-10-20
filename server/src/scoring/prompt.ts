@@ -1,5 +1,7 @@
 import type { Resume } from "../resume/schema.js";
 
+const NOTICE_DAYS = 60;
+
 export const SCORING_SYSTEM_PROMPT = `You screen job descriptions against a candidate's resume.
 Your answer helps the candidate decide which jobs are worth applying to, so be honest, not encouraging.
 
@@ -19,6 +21,9 @@ redFlags: only real blockers or concerns, each with a short detail:
 - seniority: job asks for noticeably more experience than the resume shows
 - location: on-site or relocation requirement the candidate may not meet
 - visa: work authorization or citizenship the candidate may not have
+- notice: job wants someone to join sooner than ${NOTICE_DAYS} days (the candidate's notice period),
+  e.g. "immediate joiners", "join within 15/30 days"
+- salary: stated pay is clearly below what the candidate is looking for
 - other: anything else serious (e.g. clearance, degree mismatch)
 Use an empty list when there are none.`;
 

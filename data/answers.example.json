@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy to data/private/answers.json and fill in. Only facts you're happy to send on any application. Anything not here gets asked on Telegram.",
+  "answers": [
+    { "key": "notice_period", "patterns": ["notice period", "when can you start", "earliest start date", "availability to join"], "answer": "60 days", "reusable": true },
+    { "key": "expected_ctc", "patterns": ["expected ctc", "expected salary", "salary expectations", "desired compensation"], "answer": "", "reusable": true },
+    { "key": "current_ctc", "patterns": ["current ctc", "current salary", "current compensation"], "answer": "", "reusable": true },
+    { "key": "current_location", "patterns": ["current location", "where are you located", "city"], "answer": "", "reusable": true },
+    { "key": "relocate", "patterns": ["willing to relocate", "open to relocation"], "answer": "", "reusable": true },
+    { "key": "work_authorization_india", "patterns": ["authorized to work in india", "work authorization india"], "answer": "", "reusable": true },
+    { "key": "sponsorship", "patterns": ["require sponsorship", "visa sponsorship", "need sponsorship"], "answer": "", "reusable": true },
+    { "key": "linkedin", "patterns": ["linkedin", "linkedin profile", "linkedin url"], "answer": "", "reusable": true },
+    { "key": "github", "patterns": ["github", "github profile"], "answer": "", "reusable": true },
+    { "key": "portfolio", "patterns": ["portfolio", "website", "personal site"], "answer": "", "reusable": true },
+    { "key": "years_experience", "patterns": ["years of experience", "how many years"], "answer": "", "reusable": true }
+  ]
+}

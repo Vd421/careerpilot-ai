@@ -8,7 +8,7 @@ export const scoreSchema = z.object({
   missingSkills: z.array(z.string()),
   redFlags: z.array(
     z.object({
-      type: z.enum(["seniority", "location", "visa", "other"]),
+      type: z.enum(["seniority", "location", "visa", "notice", "salary", "other"]),
       detail: z.string(),
     }),
   ),
