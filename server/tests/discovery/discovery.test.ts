@@ -12,6 +12,7 @@ import { mapHimalayas } from "../../src/discovery/himalayas.js";
 import { fetchJobFromUrl, runDiscoveryWith, queryKeyOf, SOURCE_META } from "../../src/discovery/index.js";
 import { jsearchSource, mapJSearch } from "../../src/discovery/jsearch.js";
 import { titleMatches } from "../../src/discovery/keywords.js";
+import { titleCaseSlug, toBoards } from "../../src/discovery/boards.js";
 import { createLeverSource } from "../../src/discovery/lever.js";
 import { mapRemoteOk } from "../../src/discovery/remoteok.js";
 import { mapRemotive } from "../../src/discovery/remotive.js";
@@ -181,7 +182,7 @@ describe("adapters on saved fixtures", () => {
     const { http } = fakeHttp({ "https://api.ashbyhq.com/posting-api/job-board/x?includeCompensation=true": JSON.stringify(board) });
     const jobs = await createAshbySource({ companies: ["x"], pauseMs: 0 }).fetch({ keywords: ["backend"], locations: [] }, http);
     expect(jobs).toHaveLength(1);
-    expect(jobs[0]).toMatchObject({ salaryMin: 120000, salaryMax: 150000, salaryCurrency: "USD", remote: true, company: "x" });
+    expect(jobs[0]).toMatchObject({ salaryMin: 120000, salaryMax: 150000, salaryCurrency: "USD", remote: true, company: "X" });
   });
 
   it("jsearch without a key is skipped, not a crash", async () => {
@@ -194,6 +195,30 @@ describe("adapters on saved fixtures", () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("not configured"));
     if (saved) process.env.RAPIDAPI_KEY = saved;
     warn.mockRestore();
+  });
+});
+
+describe("company display names", () => {
+  it("entries can be a slug or { token, name }; the slug is title-cased otherwise", () => {
+    expect(titleCaseSlug("sarvam")).toBe("Sarvam");
+    expect(titleCaseSlug("my-co_x")).toBe("My Co X");
+    expect(toBoards(["supabase", { token: "acme", name: "Acme Labs" }, { token: "beta-co" }])).toEqual([
+      { token: "supabase", name: "Supabase" },
+      { token: "acme", name: "Acme Labs" },
+      { token: "beta-co", name: "Beta Co" },
+    ]);
+  });
+
+  it("ashby and lever jobs carry the display name, not the slug", async () => {
+    const board = { jobs: [{ id: "a1", title: "Backend Engineer", jobUrl: "https://jobs.ashbyhq.com/x/a1", isListed: true }] };
+    const a = fakeHttp({ "https://api.ashbyhq.com/posting-api/job-board/supabase?includeCompensation=true": JSON.stringify(board) });
+    const [aj] = await createAshbySource({ companies: ["supabase"], pauseMs: 0 }).fetch({ keywords: [], locations: [] }, a.http);
+    expect(aj.company).toBe("Supabase");
+
+    const posting = { id: "p1", text: "SDE", hostedUrl: "https://jobs.lever.co/x/p1", descriptionPlain: "d" };
+    const l = fakeHttp({ "https://api.lever.co/v0/postings/meesho?mode=json": JSON.stringify([posting]) });
+    const [lj] = await createLeverSource({ companies: [{ token: "meesho", name: "Meesho Ltd" }], pauseMs: 0 }).fetch({ keywords: [], locations: [] }, l.http);
+    expect(lj.company).toBe("Meesho Ltd");
   });
 });
 

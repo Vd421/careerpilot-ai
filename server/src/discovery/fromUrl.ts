@@ -1,6 +1,7 @@
 import type { HttpGet, RawJob } from "../contracts.js";
 import { mapAshbyJob, ashbyListUrl } from "./ashby.js";
 import { arr, defaultHttpGet, getJson, rec } from "./util.js";
+import { titleCaseSlug } from "./boards.js";
 import { mapGreenhouseJob } from "./greenhouse.js";
 import { mapLeverJob } from "./lever.js";
 
@@ -22,7 +23,7 @@ export async function fetchJobFromUrl(url: string, http: HttpGet = defaultHttpGe
     const id = parts[1] === "jobs" ? parts[2] : u.searchParams.get("gh_jid");
     if (!token || !id || !/^\d+$/.test(id)) return null;
     const body = await getJson(http, `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(token)}/jobs/${id}`);
-    return body ? mapGreenhouseJob(body, token) : null;
+    return body ? mapGreenhouseJob(body, titleCaseSlug(token)) : null;
   }
 
   // Lever: jobs.lever.co/<company>/<uuid> (EU boards live on jobs.eu.lever.co / api.eu.lever.co)
@@ -31,7 +32,7 @@ export async function fetchJobFromUrl(url: string, http: HttpGet = defaultHttpGe
     if (!company || !id) return null;
     const api = host === "jobs.eu.lever.co" ? "api.eu.lever.co" : "api.lever.co";
     const body = await getJson(http, `https://${api}/v0/postings/${encodeURIComponent(company)}/${encodeURIComponent(id)}`);
-    return body ? mapLeverJob(body, company) : null;
+    return body ? mapLeverJob(body, titleCaseSlug(company)) : null;
   }
 
   // Ashby has no single-posting endpoint: fetch the board and pick the id.
@@ -40,7 +41,7 @@ export async function fetchJobFromUrl(url: string, http: HttpGet = defaultHttpGe
     if (!board || !id) return null;
     const body = await getJson(http, ashbyListUrl(board));
     const raw = arr(rec(body).jobs).find((j) => rec(j).id === id);
-    return raw ? mapAshbyJob(raw, board) : null;
+    return raw ? mapAshbyJob(raw, titleCaseSlug(board)) : null;
   }
 
   return null;

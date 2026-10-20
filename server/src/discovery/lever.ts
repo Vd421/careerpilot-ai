@@ -1,5 +1,5 @@
 import type { HttpGet, JobSource, RawJob, SourceQuery } from "../contracts.js";
-import { BOARD_PAUSE_MS, loadTargetCompanies, sleep } from "./boards.js";
+import { BOARD_PAUSE_MS, loadTargetCompanies, sleep, toBoards, type CompanyEntry } from "./boards.js";
 import { titleMatches } from "./keywords.js";
 import { SOURCE_META } from "./meta.js";
 import { arr, defaultHttpGet, getJson, isoFromEpoch, num, rec, str, toYearly } from "./util.js";
@@ -40,17 +40,17 @@ export function mapLeverJob(raw: unknown, company: string): RawJob | null {
   };
 }
 
-export function createLeverSource(opts: { companies?: string[]; pauseMs?: number } = {}): JobSource {
+export function createLeverSource(opts: { companies?: CompanyEntry[]; pauseMs?: number } = {}): JobSource {
   return {
     meta: SOURCE_META.lever,
     async fetch(query: SourceQuery, http: HttpGet = defaultHttpGet) {
-      const companies = opts.companies ?? loadTargetCompanies().lever;
+      const boards = toBoards(opts.companies ?? loadTargetCompanies().lever);
       const out: RawJob[] = [];
-      for (const [i, company] of companies.entries()) {
+      for (const [i, board] of boards.entries()) {
         if (i > 0) await sleep(opts.pauseMs ?? BOARD_PAUSE_MS);
-        const body = await getJson(http, leverListUrl(company));
+        const body = await getJson(http, leverListUrl(board.token));
         for (const raw of arr(body)) {
-          const job = mapLeverJob(raw, company);
+          const job = mapLeverJob(raw, board.name);
           if (job && titleMatches(job.title, query.keywords)) out.push(job);
         }
       }

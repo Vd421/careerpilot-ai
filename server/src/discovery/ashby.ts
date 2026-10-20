@@ -1,5 +1,5 @@
 import type { HttpGet, JobSource, RawJob, SourceQuery } from "../contracts.js";
-import { BOARD_PAUSE_MS, loadTargetCompanies, sleep } from "./boards.js";
+import { BOARD_PAUSE_MS, loadTargetCompanies, sleep, toBoards, type CompanyEntry } from "./boards.js";
 import { titleMatches } from "./keywords.js";
 import { SOURCE_META } from "./meta.js";
 import { arr, defaultHttpGet, getJson, htmlToText, num, rec, str, toYearly } from "./util.js";
@@ -49,17 +49,17 @@ export function mapAshbyJob(raw: unknown, board: string): RawJob | null {
   };
 }
 
-export function createAshbySource(opts: { companies?: string[]; pauseMs?: number } = {}): JobSource {
+export function createAshbySource(opts: { companies?: CompanyEntry[]; pauseMs?: number } = {}): JobSource {
   return {
     meta: SOURCE_META.ashby,
     async fetch(query: SourceQuery, http: HttpGet = defaultHttpGet) {
-      const boards = opts.companies ?? loadTargetCompanies().ashby;
+      const boards = toBoards(opts.companies ?? loadTargetCompanies().ashby);
       const out: RawJob[] = [];
       for (const [i, board] of boards.entries()) {
         if (i > 0) await sleep(opts.pauseMs ?? BOARD_PAUSE_MS);
-        const body = await getJson(http, ashbyListUrl(board));
+        const body = await getJson(http, ashbyListUrl(board.token));
         for (const raw of arr(rec(body).jobs)) {
-          const job = mapAshbyJob(raw, board);
+          const job = mapAshbyJob(raw, board.name);
           if (job && titleMatches(job.title, query.keywords)) out.push(job);
         }
       }

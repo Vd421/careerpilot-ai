@@ -2,5 +2,5 @@
   "_comment": "Board tokens verified to return HTTP 200 on 2026-10-21. Copy to data/target-companies.json and edit.",
   "greenhouse": ["groww", "gitlab", "cloudflare", "databricks", "stripe", "airbnb", "coinbase", "mongodb", "datadog", "twilio", "figma", "discord", "reddit", "dropbox", "elastic"],
   "lever": ["cred", "meesho", "paytm", "zeta", "palantir"],
-  "ashby": ["supabase", "posthog", "linear", "notion", "ramp", "zapier", "sarvam", "openai"]
+  "ashby": [{ "token": "supabase", "name": "Supabase" }, "posthog", "linear", "notion", "ramp", "zapier", { "token": "sarvam", "name": "Sarvam AI" }, { "token": "openai", "name": "OpenAI" }]
 }
