@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { resolve } from "node:path";
 import { prisma } from "../../src/db.js";
 import { resetDb } from "../helpers/resetDb.js";
-import { runTailor, TailorError, type TailorModel } from "../../src/tailor/index.js";
+import { runTailor, TailorError, TailorCapError, type TailorModel } from "../../src/tailor/index.js";
 import { validateTailored } from "../../src/tailor/validate.js";
 import { buildTailorPrompt } from "../../src/tailor/prompt.js";
 import { loadResume } from "../../src/resume/load.js";
@@ -171,7 +171,7 @@ describe("runTailor", () => {
     await prisma.settings.update({ where: { id: 1 }, data: { maxTailorsPerDay: 1 } });
     await prisma.aiCall.create({ data: { purpose: "tailor", model: "m", inputTokens: 1, outputTokens: 1 } });
     const fake = fakeModel(GOOD);
-    await expect(runTailor(job.id, undefined, fake.model)).rejects.toThrow(/cap/);
+    await expect(runTailor(job.id, undefined, fake.model)).rejects.toThrow(TailorCapError);
     expect(fake.prompts).toHaveLength(0);
   });
 

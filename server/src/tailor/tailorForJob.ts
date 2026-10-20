@@ -13,6 +13,10 @@ export class TailorError extends Error {
   name = "TailorError";
 }
 
+export class TailorCapError extends TailorError {
+  name = "TailorCapError";
+}
+
 // Same idea as ScoringModel: the real one calls Claude, tests pass a fake (no cost).
 export type TailorModel = (system: string, user: string) => Promise<ModelResult>;
 
@@ -64,7 +68,7 @@ export async function runTailor(
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     // Each model call costs money, so the cap is checked before every call, retries included.
     const today = await prisma.aiCall.count({ where: { purpose: "tailor", createdAt: { gte: startOfToday() } } });
-    if (today >= cap) throw new TailorError(`Daily tailor cap reached (${cap})`);
+    if (today >= cap) throw new TailorCapError(`Daily tailor cap reached (${cap})`);
 
     const prompt = buildTailorPrompt(job, resume, job.matchedSkills, job.missingSkills, violations);
     const result = await model(TAILOR_SYSTEM_PROMPT, prompt);
