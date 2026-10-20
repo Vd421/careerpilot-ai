@@ -238,7 +238,7 @@ route("POST", "/applications/:id/mark-applied", (m) => {
   const job = findJob(a.jobId);
   job.status = "applied";
   job.application = a;
-  log("apply.submitted", job, { by: "me" });
+  log("application.marked_applied", job);
   return undefined;
 });
 

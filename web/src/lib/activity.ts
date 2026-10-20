@@ -1,6 +1,6 @@
 import type { ActivityItem, AgentActionType } from "@contracts";
 import { AGENT_ACTION_TYPES } from "@contracts";
-import type { Tone } from "./format";
+import { SOURCE_LABEL, type Tone } from "./format";
 
 export const ACTIVITY_GROUPS = [
   { id: "discovery", label: "Discovery", prefixes: ["job."] },
@@ -34,6 +34,7 @@ const TITLES: Record<AgentActionType, string> = {
   "application.approved": "You approved the application",
   "application.skipped": "Skipped the application",
   "application.manual": "Moved to manual apply",
+  "application.marked_applied": "You marked it as applied",
   "form.prescanned": "Scanned the application form",
   "question.matched_bank": "Answered from the answer bank",
   "question.asked": "Asked you a question",
@@ -56,7 +57,7 @@ const TITLES: Record<AgentActionType, string> = {
 export const activityTitle = (t: AgentActionType) => TITLES[t];
 
 export const activityTone = (t: AgentActionType): Tone => {
-  if (t === "apply.submitted") return "success";
+  if (t === "apply.submitted" || t === "application.marked_applied") return "success";
   if (t === "apply.failed" || t === "resume.tailor_rejected" || t === "apply.blocked_cap") return "danger";
   if (t === "application.manual" || t === "job.filtered_out") return "warning";
   if (t.startsWith("telegram") || t === "application.approved" || t === "answer.approved" || t === "apply.submit_approved") return "accent";
@@ -67,7 +68,7 @@ export const activityTone = (t: AgentActionType): Tone => {
 export function activityDetail(a: ActivityItem): string | null {
   const d = a.detail;
   if (typeof d.score === "number") return `Match ${d.score}%`;
-  if (typeof d.source === "string") return `Source: ${d.source}`;
+  if (typeof d.source === "string") return `Source: ${SOURCE_LABEL[d.source as keyof typeof SOURCE_LABEL] ?? d.source}`;
   if (typeof d.variant === "string") return `Resume variant ${d.variant}`;
   if (Array.isArray(d.reasons) && d.reasons.length) return d.reasons.join("; ");
   if (typeof d.reason === "string") return d.reason.replace(/_/g, " ");

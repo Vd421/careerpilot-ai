@@ -51,7 +51,7 @@ export function Sidebar() {
   const used = status?.appliedToday ?? 0;
   const cap = status?.dailyCap ?? 15;
 
-  const itemBase = "group flex h-8 items-center gap-2.5 rounded-[8px] px-2 text-[13.5px] transition-colors duration-150";
+  const itemBase = "group flex h-8 items-center gap-2.5 rounded-[8px] px-[8px] text-[13.5px] transition-colors duration-150";
 
   return (
     <aside
@@ -60,11 +60,11 @@ export function Sidebar() {
       aria-label="Sidebar"
       className={cn(
         "relative z-20 flex h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-sidebar transition-[width] duration-200 ease-out",
-        collapsed ? "w-14" : "w-[260px]",
+        collapsed ? "w-[56px]" : "w-[260px]",
       )}
     >
       {/* Header */}
-      <div className={cn("flex shrink-0 px-3 pt-3", collapsed ? "flex-col items-center gap-2" : "h-12 items-center justify-between")}>
+      <div className={cn("flex shrink-0 px-[12px] pt-3", collapsed ? "flex-col items-center gap-2" : "h-12 items-center justify-between")}>
         <div className="flex items-center gap-2.5 pl-1">
           <Logo />
           {!collapsed && <span className="text-[15px] font-semibold tracking-[-0.015em]">CareerPilot</span>}
@@ -76,20 +76,20 @@ export function Sidebar() {
             aria-expanded={!collapsed}
             className="flex size-7 items-center justify-center rounded-[8px] text-muted transition-colors hover:bg-hover hover:text-text"
           >
-            {collapsed ? <PanelLeftOpen className="size-4" strokeWidth={1.5} /> : <PanelLeftClose className="size-4" strokeWidth={1.5} />}
+            {collapsed ? <PanelLeftOpen className="size-[16px]" strokeWidth={1.5} /> : <PanelLeftClose className="size-[16px]" strokeWidth={1.5} />}
           </button>
         </Tip>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-3 pb-2 pt-3">
+      <div className="flex min-h-0 flex-1 flex-col px-[12px] pb-2 pt-3">
         {/* Primary action + search */}
         <Tip disabled={!collapsed} label="New job">
           <button
             onClick={() => setNewJobOpen(true)}
             aria-label="New job"
-            className="flex h-9 items-center gap-2.5 rounded-[8px] bg-accent px-2 text-[13.5px] font-medium text-white transition-colors hover:bg-accent-hover"
+            className="flex h-9 items-center gap-2.5 rounded-[8px] bg-accent px-[8px] text-[13.5px] font-medium text-white transition-colors hover:bg-accent-hover"
           >
-            <Plus className="size-4 shrink-0" strokeWidth={1.75} />
+            <Plus className="size-[16px] shrink-0" strokeWidth={1.75} />
             <Label collapsed={collapsed}>New job</Label>
           </button>
         </Tip>
@@ -99,7 +99,7 @@ export function Sidebar() {
             aria-label="Open command palette"
             className={cn(itemBase, "mt-1.5 w-full text-muted hover:bg-hover hover:text-text")}
           >
-            <Search className="size-4 shrink-0" strokeWidth={1.5} />
+            <Search className="size-[16px] shrink-0" strokeWidth={1.5} />
             <Label collapsed={collapsed} className="flex-1 text-left">
               Search
             </Label>
@@ -117,7 +117,7 @@ export function Sidebar() {
                 aria-label={label}
                 className={({ isActive }) => cn(itemBase, isActive ? "bg-[#e9e7e0] font-medium text-text" : "text-[#55524b] hover:bg-hover hover:text-text")}
               >
-                <Icon className="size-4 shrink-0" strokeWidth={1.5} />
+                <Icon className="size-[16px] shrink-0" strokeWidth={1.5} />
                 <Label collapsed={collapsed}>{label}</Label>
               </NavLink>
             </Tip>
@@ -126,11 +126,11 @@ export function Sidebar() {
 
         {/* Recent */}
         <div className={cn("mt-5 flex min-h-0 flex-1 flex-col transition-opacity duration-150", collapsed && "pointer-events-none opacity-0")} aria-hidden={collapsed}>
-          <h2 className="px-2 pb-1.5 text-[11.5px] font-medium uppercase tracking-[0.04em] text-muted">Recent</h2>
+          <h2 className="px-[8px] pb-1.5 text-[11.5px] font-medium uppercase tracking-[0.04em] text-muted">Recent</h2>
           <ul className="-mx-1 min-h-0 flex-1 space-y-px overflow-y-auto px-1">
             {recent.isLoading &&
               Array.from({ length: 6 }).map((_, i) => (
-                <li key={i} className="px-2 py-1.5">
+                <li key={i} className="px-[8px] py-1.5">
                   <Skeleton className="h-3.5" style={{ width: `${70 + ((i * 13) % 25)}%` }} />
                 </li>
               ))}
@@ -141,7 +141,7 @@ export function Sidebar() {
                   onClick={() => navigate(`/jobs?job=${j.id}`)}
                   title={`${j.company} · ${j.title}`}
                   className={cn(
-                    "block h-7 w-full truncate rounded-[6px] px-2 text-left text-[13px] transition-colors hover:bg-hover",
+                    "block h-7 w-full truncate rounded-[6px] px-[8px] text-left text-[13px] transition-colors hover:bg-hover",
                     activeJob === String(j.id) ? "bg-[#e9e7e0] text-text" : "text-[#55524b] hover:text-text",
                   )}
                 >
@@ -150,17 +150,17 @@ export function Sidebar() {
                 </button>
               </li>
             ))}
-            {recent.data?.length === 0 && <li className="px-2 py-1 text-[12.5px] text-muted">Jobs you add or find will show up here.</li>}
+            {recent.data?.length === 0 && <li className="px-[8px] py-1 text-[12.5px] text-muted">Jobs you add or find will show up here.</li>}
           </ul>
         </div>
         {collapsed && <div className="flex-1" />}
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 space-y-1 border-t border-border px-3 py-3">
+      <div className="shrink-0 space-y-1 border-t border-border px-[12px] py-3">
         <Tip disabled={!collapsed} label={status?.telegramConnected ? "Telegram connected" : "Telegram not connected"}>
           <div className={cn(itemBase, "cursor-default text-[12.5px] text-muted")}>
-            <span className="flex size-4 shrink-0 items-center justify-center">
+            <span className="flex size-[16px] shrink-0 items-center justify-center">
               <span
                 aria-hidden
                 className={cn("size-2 rounded-full", status?.telegramConnected ? "bg-success shadow-[0_0_0_3px_rgba(63,125,78,.15)]" : "bg-[#b9b5aa]")}
@@ -171,7 +171,7 @@ export function Sidebar() {
         </Tip>
         <Tip disabled={!collapsed} label={`${used} of ${cap} applications today`}>
           <div className={cn(itemBase, "cursor-default text-[12.5px] text-muted")} aria-label={`${used} of ${cap} applications today`}>
-            <span className="num flex size-4 shrink-0 items-center justify-center text-[10.5px] font-medium text-text">{collapsed ? used : ""}</span>
+            <span className="num flex size-[16px] shrink-0 items-center justify-center text-[10.5px] font-medium text-text">{collapsed ? used : ""}</span>
             <span className={cn("flex min-w-0 flex-1 items-center gap-2 transition-opacity duration-150", collapsed ? "opacity-0" : "opacity-100 delay-75")}>
               <span className="whitespace-nowrap">Applied today</span>
               <span className="num ml-auto text-text">
@@ -180,7 +180,7 @@ export function Sidebar() {
             </span>
           </div>
         </Tip>
-        <div className="!mt-2 flex items-center gap-2.5 rounded-[8px] px-2 py-1">
+        <div className="!mt-2 flex items-center gap-2.5 rounded-[8px] px-[8px] py-1">
           <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-tint text-[11px] font-semibold text-accent" aria-hidden>
             V
           </div>
@@ -190,7 +190,7 @@ export function Sidebar() {
           </div>
           {!collapsed && (
             <NavLink to="/settings" aria-label="Open settings" className="flex size-7 items-center justify-center rounded-[8px] text-muted hover:bg-hover hover:text-text">
-              <Settings className="size-4" strokeWidth={1.5} />
+              <Settings className="size-[16px]" strokeWidth={1.5} />
             </NavLink>
           )}
         </div>
