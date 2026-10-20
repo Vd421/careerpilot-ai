@@ -26,6 +26,8 @@ import type {
   StatusResponse,
 } from "@contracts";
 
+import { mockScreenshot } from "../mocks/screenshot";
+
 export const MOCK = import.meta.env.VITE_MOCK === "1";
 
 export class ApiRequestError extends Error {
@@ -122,9 +124,5 @@ export const api = {
   updateSettings: (patch: Partial<SettingsDto>) => request<SettingsDto>("PUT", "/settings", { body: patch }),
 };
 
-/** Screenshot and PDF URLs come from the API; in mock mode screenshots are drawn locally. */
-export async function resolveScreenshot(url: string): Promise<string> {
-  if (!MOCK) return url;
-  const { mockScreenshot } = await import("../mocks/screenshot");
-  return mockScreenshot(url);
-}
+/** Screenshot URLs come from the API; in mock mode they are drawn locally (tiny SVG, no network). */
+export const screenshotSrc = (url: string) => (MOCK ? mockScreenshot(url) : url);

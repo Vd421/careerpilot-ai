@@ -116,3 +116,12 @@ export function initials(s: string) {
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+export const MANUAL_REASON_SHORT: Record<ManualReason, string> = {
+  captcha: "CAPTCHA",
+  unknown_form: "Unknown form",
+  unsupported_platform: "Other platform",
+  unanswered: "Unanswered",
+  daily_cap: "Daily cap",
+  error: "Error",
+};

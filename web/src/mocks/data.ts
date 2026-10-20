@@ -212,7 +212,7 @@ export function buildDb(): MockDb {
         status: s.status,
         method: applied ? (s.method ?? "auto") : s.status === "manual" ? "manual" : null,
         resumeVersionId: rvIdForApp,
-        variantName: s.variant ?? null,
+        variantName: s.variant ?? (rvIdForApp ? "A" : null),
         appliedAt: applied ? iso(s.age - 4) : null,
         screenshotUrl: s.status === "approved" || (applied && (s.method ?? "auto") === "auto") ? `/api/screenshots/app-${appId - 1}.png` : null,
         manualReason: s.status === "manual" ? (s.reason ?? "error") : null,
