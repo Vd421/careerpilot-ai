@@ -1,4 +1,5 @@
 import { basename } from "node:path";
+import { prisma } from "../db.js";
 import { CronExpressionParser } from "cron-parser";
 import type {
   ActivityItem,
@@ -89,14 +90,25 @@ export function toJobListItem(j: JobListRow): JobListItem {
   };
 }
 
-export function toResumeVersionItem(v: VersionRow): ResumeVersionItem {
+export function toResumeVersionItem(v: VersionRow, activeId: number | null): ResumeVersionItem {
   return {
     id: v.id,
     variantName: v.variant?.name ?? null,
     tailored: v.tailored as unknown as TailoredResume,
     pdfUrl: v.pdfPath ? `/api/resume-versions/${v.id}/pdf` : null,
     createdAt: v.createdAt.toISOString(),
+    parentId: v.parentId,
+    instruction: v.instruction,
+    active: v.id === activeId,
   };
+}
+
+// The version an application would use: the one it points to, else the newest for the job.
+export async function activeVersionId(jobId: number): Promise<number | null> {
+  const app = await prisma.application.findUnique({ where: { jobId }, select: { resumeVersionId: true } });
+  if (app?.resumeVersionId) return app.resumeVersionId;
+  const newest = await prisma.resumeVersion.findFirst({ where: { jobId }, orderBy: { id: "desc" }, select: { id: true } });
+  return newest?.id ?? null;
 }
 
 export function toApplicationListItem(a: ApplicationRow): ApplicationListItem {
@@ -135,7 +147,8 @@ export function toJobDetail(j: JobDetailRow): JobDetail {
     filterReasons: j.filterReasons,
     applyPlatform: j.applyPlatform as ApplyPlatform,
     attribution: SOURCE_META[j.source as SourceId]?.attribution ?? null,
-    resumeVersions: j.resumeVersions.map(toResumeVersionItem),
+    // resumeVersions are ordered newest first
+    resumeVersions: j.resumeVersions.map((v) => toResumeVersionItem(v, j.application?.resumeVersionId ?? j.resumeVersions[0]?.id ?? null)),
     application: j.application ? toApplicationListItem(j.application) : null,
   };
 }

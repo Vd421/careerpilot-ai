@@ -18,7 +18,7 @@ import { dedupeKey } from "../filters/index.js";
 import { ensureApplication } from "../queue/push.js";
 import type { ApiDeps } from "./deps.js";
 import { HttpError, notFound, parse, parseId } from "./errors.js";
-import { jobDetailInclude, jobListInclude, toJobDetail, toJobListItem, toResumeVersionItem } from "./mappers.js";
+import { activeVersionId, jobDetailInclude, jobListInclude, toJobDetail, toJobListItem, toResumeVersionItem } from "./mappers.js";
 
 const listQuery = z.object({
   stage: z.enum(JOB_STAGES).optional(),
@@ -182,7 +182,7 @@ export function jobsRouter(deps: ApiDeps): Router {
     const { resumeVersionId } = await deps.tailorForJob(id);
     await deps.renderResumePdf(resumeVersionId);
     const v = await prisma.resumeVersion.findUniqueOrThrow({ where: { id: resumeVersionId }, include: { variant: true } });
-    res.json(toResumeVersionItem(v));
+    res.json(toResumeVersionItem(v, await activeVersionId(id)));
   });
 
   r.post("/jobs/:id/skip", async (req, res) => {

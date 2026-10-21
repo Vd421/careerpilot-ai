@@ -20,13 +20,13 @@ model Job {
   createdAt   DateTime @default(now())
 
   // Where it came from
-  source      String   @default("manual") // SourceId in contracts.ts
-  externalId  String?
-  dedupeKey   String?  @unique // normalized company + title + url
-  location    String?
-  remote      Boolean?
-  postedAt    DateTime?
-  applyPlatform String @default("other") // ApplyPlatform: greenhouse | lever | ashby | other
+  source        String    @default("manual") // SourceId in contracts.ts
+  externalId    String?
+  dedupeKey     String?   @unique // normalized company + title + url
+  location      String?
+  remote        Boolean?
+  postedAt      DateTime?
+  applyPlatform String    @default("other") // ApplyPlatform: greenhouse | lever | ashby | other
 
   // Salary (normalized to a yearly amount in `salaryCurrency`)
   salaryMin      Int?
@@ -34,8 +34,8 @@ model Job {
   salaryCurrency String?
 
   // Pipeline
-  stage  String   @default("discovered") // JobStage
-  tags   String[] @default([]) // e.g. salary_unknown, notice_risk
+  stage         String   @default("discovered") // JobStage
+  tags          String[] @default([]) // e.g. salary_unknown, notice_risk
   filterReasons String[] @default([]) // why it was filtered out
 
   // Filled in by scoring (null until scored)
@@ -51,6 +51,7 @@ model Job {
 
   aiCalls        AiCall[]
   resumeVersions ResumeVersion[]
+  chatMessages   ResumeChatMessage[]
   application    Application?
   actions        AgentAction[]
 
@@ -83,48 +84,69 @@ model ResumeVariant {
 
 // A resume tailored for one job. `tailored` holds bullet ids + rewrites (TailoredResume).
 model ResumeVersion {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   jobId     Int
-  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job       Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
   variantId Int?
   variant   ResumeVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
   tailored  Json
   pdfPath   String?
-  createdAt DateTime @default(now())
+  createdAt DateTime       @default(now())
+
+  // Refine chat: which version this one was made from, and the instruction that made it
+  parentId    Int?
+  parent      ResumeVersion?  @relation("VersionHistory", fields: [parentId], references: [id], onDelete: SetNull)
+  children    ResumeVersion[] @relation("VersionHistory")
+  instruction String?
 
   applications Application[]
+  chatMessages ResumeChatMessage[]
+}
+
+// The Refine chat in the job drawer: my instructions and the agent's replies, per job.
+model ResumeChatMessage {
+  id              Int            @id @default(autoincrement())
+  jobId           Int
+  job             Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  role            String // user | assistant
+  text            String
+  resumeVersionId Int? // the version this reply produced, if any
+  resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+
+  @@index([jobId])
 }
 
 model Application {
-  id     Int    @id @default(autoincrement())
-  jobId  Int    @unique // one application per job
-  job    Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  status String @default("pending_approval") // ApplicationStatus
+  id     Int     @id @default(autoincrement())
+  jobId  Int     @unique // one application per job
+  job    Job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status String  @default("pending_approval") // ApplicationStatus
   method String? // "auto" | "manual"
 
   resumeVersionId Int?
   resumeVersion   ResumeVersion? @relation(fields: [resumeVersionId], references: [id], onDelete: SetNull)
   resumeVariantId Int?
   resumeVariant   ResumeVariant? @relation(fields: [resumeVariantId], references: [id], onDelete: SetNull)
-  loopId Int?
-  loop   Loop? @relation(fields: [loopId], references: [id], onDelete: SetNull)
+  loopId          Int?
+  loop            Loop?          @relation(fields: [loopId], references: [id], onDelete: SetNull)
 
   // Safety: the two human taps, recorded for THIS application
-  approvedAt        DateTime? // [Apply] tap
-  submitApprovedAt  DateTime? // [Submit] tap on the "ready to submit" card
-  submitLockedAt    DateTime? // set atomically right before clicking submit; never cleared
-  idempotencyKey    String    @unique // "apply:<jobId>"
+  approvedAt       DateTime? // [Apply] tap
+  submitApprovedAt DateTime? // [Submit] tap on the "ready to submit" card
+  submitLockedAt   DateTime? // set atomically right before clicking submit; never cleared
+  idempotencyKey   String    @unique // "apply:<jobId>"
 
   filledAt       DateTime?
   appliedAt      DateTime?
   screenshotPath String?
   manualReason   String? // captcha | unknown_form | unsupported_platform | unanswered | error
   lastError      String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  questions Question[]
-  actions   AgentAction[]
+  questions        Question[]
+  actions          AgentAction[]
   telegramMessages TelegramMessage[]
 
   @@index([status])
@@ -132,19 +154,19 @@ model Application {
 
 // A form field found by pre-scan.
 model Question {
-  id            Int     @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   applicationId Int
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   text          String
   fieldName     String // the form's input name/id, used by the filler
   fieldType     String // FieldType: text | textarea | select | radio | checkbox | file
-  options       String[] @default([])
+  options       String[]    @default([])
   required      Boolean
-  status        String  @default("pending") // pending | asked | answered
+  status        String      @default("pending") // pending | asked | answered
   askedVia      String? // bank | telegram | dashboard
   answerId      Int?
-  answer        Answer? @relation(fields: [answerId], references: [id], onDelete: SetNull)
-  createdAt     DateTime @default(now())
+  answer        Answer?     @relation(fields: [answerId], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
 
   telegramMessages TelegramMessage[]
 
@@ -170,30 +192,30 @@ model Answer {
 
 // The activity log. Every agent step writes one.
 model AgentAction {
-  id            Int      @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   type          String // AgentActionType
   jobId         Int?
-  job           Job?     @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  job           Job?         @relation(fields: [jobId], references: [id], onDelete: SetNull)
   applicationId Int?
   application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   loopId        Int?
-  detail        Json     @default("{}")
-  createdAt     DateTime @default(now())
+  detail        Json         @default("{}")
+  createdAt     DateTime     @default(now())
 
   @@index([createdAt])
   @@index([type])
 }
 
 model TelegramMessage {
-  id            Int      @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   direction     String // in | out
   text          String
   chatMessageId Int?
   questionId    Int?
-  question      Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  question      Question?    @relation(fields: [questionId], references: [id], onDelete: SetNull)
   applicationId Int?
   application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
-  createdAt     DateTime @default(now())
+  createdAt     DateTime     @default(now())
 }
 
 // A saved search that runs on a schedule (LoopCV-style campaign).

@@ -108,6 +108,9 @@ export const AGENT_ACTION_TYPES = [
   "resume.tailored",
   "resume.tailor_rejected", // validation caught an invented bullet/number
   "resume.pdf_rendered",
+  "resume.refined", // Refine chat produced a new version
+  "resume.refine_rejected", // the validator rejected a refine (would have invented something)
+  "resume.restored", // an older version was made current again
   "telegram.card_sent",
   "telegram.tap",
   "application.approved",
@@ -308,6 +311,13 @@ export const CALLBACK = {
 
 // backend: server/src/tailor/index.ts
 export type TailorForJob = (jobId: number, variantId?: number) => Promise<{ resumeVersionId: number }>;
+// backend: server/src/tailor/index.ts. Never invents: the result goes through the same validator as tailoring.
+// resumeVersionId is null when nothing changed or the change was rejected; reply says why.
+export type RefineResume = (
+  jobId: number,
+  message: string,
+  baseVersionId: number,
+) => Promise<{ reply: string; resumeVersionId: number | null }>;
 // backend: server/src/pdf/index.ts
 export type RenderResumePdf = (resumeVersionId: number) => Promise<{ pdfPath: string }>;
 // backend: server/src/filters/index.ts
@@ -435,6 +445,29 @@ export interface ResumeVersionItem {
   tailored: TailoredResume;
   pdfUrl: string | null; // /api/resume-versions/:id/pdf
   createdAt: string;
+  parentId: number | null; // the version it was refined/restored from
+  instruction: string | null; // the Refine chat message that produced it
+  active: boolean; // the one an application would use (application's version, else the newest)
+}
+
+// GET  /api/jobs/:id/resume-chat                          → ResumeChatMessageItem[]
+// POST /api/jobs/:id/resume-chat  RefineRequest           → RefineResponse
+//   400 if no tailored version yet, 409 once the application was submitted
+// POST /api/resume-versions/:id/restore                   → ResumeVersionItem (copy made current, no AI cost)
+export interface ResumeChatMessageItem {
+  id: number;
+  role: "user" | "assistant";
+  text: string;
+  resumeVersionId: number | null;
+  createdAt: string;
+}
+export interface RefineRequest {
+  message: string; // 1..1000 chars
+  baseVersionId?: number; // default: the active version
+}
+export interface RefineResponse {
+  messages: ResumeChatMessageItem[]; // the new user + assistant messages
+  version: ResumeVersionItem | null; // the new version, if one was made
 }
 
 // GET /api/applications?status=&loopId=   → ApplicationListItem[]

@@ -46,6 +46,17 @@ function startOfToday(): Date {
   return d;
 }
 
+// Tailoring and Refine-chat calls share one daily budget (both use the better, pricier model).
+// Checked before EVERY model call, retries included.
+export async function assertTailorBudget(): Promise<void> {
+  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
+  const cap = settings?.maxTailorsPerDay ?? 20;
+  const today = await prisma.aiCall.count({
+    where: { purpose: { in: ["tailor", "refine"] }, createdAt: { gte: startOfToday() } },
+  });
+  if (today >= cap) throw new TailorCapError(`Daily tailor cap reached (${cap})`);
+}
+
 const MAX_ATTEMPTS = 2; // first try + one retry with the violations appended
 
 export async function runTailor(
@@ -63,14 +74,10 @@ export async function runTailor(
   if (!variant) throw new TailorError("No resume variant found. Run `npm run db:seed` first.");
   const resume = loadResume(resolveRepoPath(variant.filePath));
 
-  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
-  const cap = settings?.maxTailorsPerDay ?? 20;
-
   let violations: string[] = [];
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     // Each model call costs money, so the cap is checked before every call, retries included.
-    const today = await prisma.aiCall.count({ where: { purpose: "tailor", createdAt: { gte: startOfToday() } } });
-    if (today >= cap) throw new TailorCapError(`Daily tailor cap reached (${cap})`);
+    await assertTailorBudget();
 
     const prompt = buildTailorPrompt(job, resume, job.matchedSkills, job.missingSkills, violations);
     const result = await model(TAILOR_SYSTEM_PROMPT, prompt);

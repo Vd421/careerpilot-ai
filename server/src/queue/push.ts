@@ -31,9 +31,19 @@ export async function ensureApplication(jobId: number): Promise<{ application: A
 
   const job = await prisma.job.findUniqueOrThrow({ where: { id: jobId } });
   const resumeVariantId = await pickVariantId(job.loopId);
+  // A resume tailored (or refined) from the dashboard before the card went out is the one to use.
+  // Without this, [Apply] would pay to tailor again.
+  const newest = await prisma.resumeVersion.findFirst({ where: { jobId }, orderBy: { id: "desc" }, select: { id: true } });
   try {
     const application = await prisma.application.create({
-      data: { jobId, loopId: job.loopId, resumeVariantId, idempotencyKey: key, status: "pending_approval" },
+      data: {
+        jobId,
+        loopId: job.loopId,
+        resumeVariantId,
+        resumeVersionId: newest?.id ?? null,
+        idempotencyKey: key,
+        status: "pending_approval",
+      },
     });
     await prisma.job.update({ where: { id: jobId }, data: { stage: "pushed" } });
     await prisma.agentAction.create({

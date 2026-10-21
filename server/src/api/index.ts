@@ -5,6 +5,7 @@ import { errorHandler, HttpError } from "./errors.js";
 import { jobsRouter } from "./jobs.js";
 import { loopsRouter } from "./loops.js";
 import { miscRouter } from "./misc.js";
+import { resumeChatRouter } from "./resumeChat.js";
 
 export type { ApiDeps } from "./deps.js";
 
@@ -17,6 +18,7 @@ export function createApiRouter(deps: ApiDeps): Router {
   r.use(jobsRouter(deps));
   r.use(applicationsRouter(deps));
   r.use(loopsRouter(deps));
+  r.use(resumeChatRouter(deps));
   r.use(() => {
     throw new HttpError(404, "Not found");
   });

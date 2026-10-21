@@ -30,6 +30,17 @@ function build(over: Partial<ApiDeps> = {}) {
       });
       return { resumeVersionId: v.id };
     },
+    // Fake refine: mimics runRefine's writes (both chat messages + a child version)
+    refineResume: async (jobId, message, baseVersionId) => {
+      await prisma.resumeChatMessage.create({ data: { jobId, role: "user", text: message } });
+      const v = await prisma.resumeVersion.create({
+        data: { jobId, parentId: baseVersionId, instruction: message, tailored: { headline: "refined", sections: [], skillsOrder: [], coverNote: null } },
+      });
+      const app = await prisma.application.findUnique({ where: { jobId } });
+      if (app) await prisma.application.update({ where: { id: app.id }, data: { resumeVersionId: v.id } });
+      await prisma.resumeChatMessage.create({ data: { jobId, role: "assistant", text: "Done.", resumeVersionId: v.id } });
+      return { reply: "Done.", resumeVersionId: v.id };
+    },
     renderResumePdf: async (id) => {
       const p = join(pdfDir, `${id}.pdf`);
       writeFileSync(p, "%PDF-fake");
@@ -523,5 +534,89 @@ describe("errors", () => {
     const { api } = build();
     expect((await api.get("/api/nope").expect(404)).body).toMatchObject({ error: "Not found" });
     await api.post("/api/jobs").set("Content-Type", "application/json").send("{bad").expect(400);
+  });
+});
+
+describe("resume refine chat", () => {
+  const tailored = { headline: null, sections: [], skillsOrder: [], coverNote: null };
+  const mkVersion = (jobId: number) => prisma.resumeVersion.create({ data: { jobId, tailored } });
+
+  it("POST makes a new active version from the active one and returns both messages", async () => {
+    const { api } = build();
+    const job = await mkJob();
+    const v1 = await mkVersion(job.id);
+
+    const res = await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "More backend" }).expect(200);
+
+    expect(res.body.messages.map((m: { role: string }) => m.role)).toEqual(["user", "assistant"]);
+    expect(res.body.version).toMatchObject({ parentId: v1.id, instruction: "More backend", active: true });
+    expect(res.body.version.pdfUrl).toBe(`/api/resume-versions/${res.body.version.id}/pdf`);
+
+    const chat = await api.get(`/api/jobs/${job.id}/resume-chat`).expect(200);
+    expect(chat.body).toHaveLength(2);
+    const detail = await api.get(`/api/jobs/${job.id}`).expect(200);
+    const active = detail.body.resumeVersions.filter((v: { active: boolean }) => v.active);
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(res.body.version.id);
+  });
+
+  it("400 with no tailored version yet, 400 on an empty message", async () => {
+    const { api } = build();
+    const job = await mkJob();
+    await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "x" }).expect(400);
+    await mkVersion(job.id);
+    await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "   " }).expect(400);
+  });
+
+  it("409 once the application was submitted", async () => {
+    const { api } = build();
+    const job = await mkJob();
+    await mkVersion(job.id);
+    await mkApp(job.id, "applied");
+    await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "x" }).expect(409);
+  });
+
+  it("a form already filled with the old resume is cleared and filled again (no silent swap before [Submit])", async () => {
+    const { api, calls } = build();
+    const job = await mkJob();
+    const v1 = await mkVersion(job.id);
+    const app = await mkApp(job.id, "approved", {
+      resumeVersionId: v1.id,
+      approvedAt: new Date(),
+      filledAt: new Date(),
+      submitApprovedAt: new Date(),
+    });
+
+    await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "x" }).expect(200);
+
+    const after = await prisma.application.findUniqueOrThrow({ where: { id: app.id } });
+    expect(after.filledAt).toBeNull();
+    expect(after.submitApprovedAt).toBeNull();
+    expect(after.resumeVersionId).not.toBe(v1.id);
+    expect(calls.enqueue).toContainEqual(["apply.fill", { applicationId: app.id }]);
+  });
+
+  it("restore copies an old version as the new active one, without an AI call", async () => {
+    const { api } = build();
+    const job = await mkJob();
+    const v1 = await mkVersion(job.id);
+    await api.post(`/api/jobs/${job.id}/resume-chat`).send({ message: "More backend" }).expect(200);
+
+    const res = await api.post(`/api/resume-versions/${v1.id}/restore`).expect(200);
+
+    expect(res.body).toMatchObject({ parentId: v1.id, instruction: null, active: true });
+    expect(await prisma.aiCall.count()).toBe(0);
+    const chat = await api.get(`/api/jobs/${job.id}/resume-chat`).expect(200);
+    expect(chat.body.at(-1).text).toBe(`Restored version #${v1.id}.`);
+    await api.post("/api/resume-versions/99999/restore").expect(404);
+  });
+
+  it("a version tailored before the card is sent is picked up by the application", async () => {
+    const { api } = build();
+    const job = await mkJob();
+    const v1 = await mkVersion(job.id);
+    const res = await api.post(`/api/jobs/${job.id}/push`).expect(200);
+    const app = await prisma.application.findUniqueOrThrow({ where: { id: res.body.applicationId } });
+    expect(app.resumeVersionId).toBe(v1.id);
   });
 });

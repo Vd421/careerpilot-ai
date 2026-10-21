@@ -3,6 +3,7 @@ import type {
   ApproveAnswer,
   Enqueue,
   RawJob,
+  RefineResume,
   RenderResumePdf,
   SubmitRawAnswer,
   TailorForJob,
@@ -17,6 +18,7 @@ export interface ApiDeps {
   syncLoopSchedules: () => Promise<void>;
   fetchJobFromUrl: (url: string) => Promise<RawJob | null>;
   tailorForJob: TailorForJob;
+  refineResume: RefineResume;
   renderResumePdf: RenderResumePdf;
   submitRawAnswer: SubmitRawAnswer;
   approveAnswer: ApproveAnswer;
@@ -33,6 +35,7 @@ export const defaultDeps: ApiDeps = {
   syncLoopSchedules: async () => (await import("../queue/index.js")).syncLoopSchedules(),
   fetchJobFromUrl: async (url) => (await import("../discovery/fromUrl.js")).fetchJobFromUrl(url),
   tailorForJob: async (...args) => (await import("../tailor/index.js")).tailorForJob(...args),
+  refineResume: async (...args) => (await import("../tailor/index.js")).refineResume(...args),
   renderResumePdf: async (...args) => (await import("../pdf/index.js")).renderResumePdf(...args),
   submitRawAnswer: async (...args) => (await import(answersModule)).submitRawAnswer(...args),
   approveAnswer: async (...args) => (await import(answersModule)).approveAnswer(...args),
