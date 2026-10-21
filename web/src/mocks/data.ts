@@ -17,6 +17,7 @@ import type {
   QuestionItem,
   RedFlag,
   ResumeVariantItem,
+  ResumeChatMessageItem,
   ResumeVersionItem,
   SettingsDto,
   SourceId,
@@ -161,6 +162,7 @@ export interface MockDb {
   jobs: JobDetail[];
   applications: ApplicationDetail[];
   resumeVersions: Map<number, ResumeVersionItem>;
+  resumeChat: Map<number, ResumeChatMessageItem[]>; // per job
   questions: QuestionItem[];
   answers: AnswerItem[];
   activity: ActivityItem[];
@@ -196,6 +198,9 @@ export function buildDb(): MockDb {
         tailored: tailoredFor(v, id),
         pdfUrl: `/api/resume-versions/${rvId - 1}/pdf`,
         createdAt: iso(s.age - 0.5),
+        parentId: null,
+        instruction: null,
+        active: true,
       };
       resumeVersions.set(rv.id, rv);
       versions.push(rv);
@@ -401,5 +406,5 @@ export function buildDb(): MockDb {
     telegramLinked: true,
   };
 
-  return { jobs, applications, resumeVersions, questions, answers, activity, loops, variants, sources, settings, telegramConnected: true };
+  return { jobs, applications, resumeVersions, resumeChat: new Map(), questions, answers, activity, loops, variants, sources, settings, telegramConnected: true };
 }

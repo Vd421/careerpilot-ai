@@ -17,6 +17,7 @@ CareerPilot keeps a human tap on every submit, and filters hard before anything 
 | **Score** | Claude Haiku 5.5, structured output: match %, matched/missing skills, red flags (seniority, location, visa, notice, salary). Capped per day. |
 | **Ask me** | Telegram card with `[Apply] [Skip] [View resume]`. |
 | **Tailor** | Claude Sonnet 5.5 rewrites and reorders my real bullets. **Code** rejects any bullet whose id isn't in `resume.json`, any changed number, any skill I don't have. Rendered to an ATS-friendly PDF with Playwright. |
+| **Refine chat** | In the job drawer, tell it "lead with backend work" or "make it shorter" and it edits the tailored resume. Same validator: ask it to add a skill you don't have and it refuses. Every version is kept and can be restored. |
 | **Form Q&A** | Playwright pre-scans the form first. Known answers come from the answer bank; new questions come to me on Telegram, I reply roughly, Claude fixes grammar only (a code check rejects new facts), I approve. |
 | **Apply** | Playwright fills Greenhouse / Lever / Ashby, screenshots, and sends me a "Ready to submit" card. Submit only after a second tap. Anything else (Indeed, Workday, CAPTCHA, unknown form) becomes a **manual** kit: link + tailored PDF + copyable answers. |
 | **A/B** | A loop can rotate two base resumes; the dashboard shows response rate per variant. |
@@ -77,7 +78,7 @@ flowchart LR
 
 - **Two processes:** the API serves the dashboard; the worker runs queue jobs, loop schedules and Telegram polling (only one process may poll Telegram, and Playwright/Claude work never blocks a dashboard request).
 - **Contracts first:** `server/src/contracts.ts` holds every status, API shape and module interface, and the web app imports it directly, so both sides can't drift.
-- **Injected I/O:** Claude, Telegram, Playwright and HTTP are passed in, so all 316 tests run offline with fakes.
+- **Injected I/O:** Claude, Telegram, Playwright and HTTP are passed in, so all 333 tests run offline with fakes.
 
 ## Stack
 
@@ -121,6 +122,7 @@ Telegram commands: `/status`, `/pending`, `/pause [loop]`, `/resume [loop]`.
 | | |
 |---|---|
 | ![Jobs](docs/images/job-drawer.png) Job drawer: score, skills, red flags | ![Tailored](docs/images/tailored-resume.png) Tailored resume, each bullet tagged with its source id |
+| ![Refine](docs/images/refine-chat.png) Refine chat: it rewords and reorders, and refuses to invent | ![Overview](docs/images/overview.png) Overview |
 | ![Loops](docs/images/loop-ab.png) Loop with resume A/B response rates | ![Questions](docs/images/questions.png) Form questions waiting on me |
 | ![Applications](docs/images/applications.png) Applications board | ![Settings](docs/images/settings.png) Dry run, caps, filters, sources |
 

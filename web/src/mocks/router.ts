@@ -14,7 +14,10 @@ import type {
   LoopInput,
   OverviewResponse,
   QuestionItem,
+  RefineRequest,
+  RefineResponse,
   ResumeVersionItem,
+  TailoredResume,
   SettingsDto,
   AttentionItem,
 } from "@contracts";
@@ -191,9 +194,8 @@ route("POST", "/jobs/:id/tailor", (m): ResumeVersionItem => {
   const job = findJob(Number(m[1]));
   const id = Math.max(0, ...db.resumeVersions.keys()) + 1;
   const base = db.resumeVersions.get(1)!;
-  const rv: ResumeVersionItem = { ...clone(base), id, variantName: "A", pdfUrl: `/api/resume-versions/${id}/pdf`, createdAt: new Date().toISOString() };
-  db.resumeVersions.set(id, rv);
-  job.resumeVersions.unshift(rv);
+  const rv: ResumeVersionItem = { ...clone(base), id, variantName: "A", pdfUrl: `/api/resume-versions/${id}/pdf`, createdAt: new Date().toISOString(), parentId: null, instruction: null, active: true };
+  addVersion(job, rv);
   if (job.application) {
     job.application.resumeVersionId = id;
     job.application.variantName = "A";
@@ -206,6 +208,98 @@ route("POST", "/jobs/:id/tailor", (m): ResumeVersionItem => {
   }
   log("resume.tailored", job, { variant: "A" });
   log("resume.pdf_rendered", job);
+  return rv;
+});
+
+// ---- resume refine chat ----------------------------------------------------
+// The real server asks Claude and validates the result; here a few keyword rules fake it so demo mode works.
+function addVersion(job: JobDetail, rv: ResumeVersionItem) {
+  db.resumeVersions.set(rv.id, rv);
+  for (const v of job.resumeVersions) v.active = false;
+  rv.active = true;
+  job.resumeVersions.unshift(rv);
+  if (job.application) {
+    job.application.resumeVersionId = rv.id;
+    const app = db.applications.find((a) => a.id === job.application!.id);
+    if (app) {
+      app.resumeVersionId = rv.id;
+      app.pdfUrl = rv.pdfUrl;
+    }
+  }
+}
+const SENT_STATUSES = ["applied", "replied", "interview", "rejected", "offer"];
+function chatOf(jobId: number) {
+  if (!db.resumeChat.has(jobId)) db.resumeChat.set(jobId, []);
+  return db.resumeChat.get(jobId)!;
+}
+function say(jobId: number, role: "user" | "assistant", text: string, resumeVersionId: number | null = null) {
+  const list = chatOf(jobId);
+  const msg = { id: Math.max(0, ...[...db.resumeChat.values()].flat().map((x) => x.id)) + 1, role, text, resumeVersionId, createdAt: new Date().toISOString() };
+  list.push(msg);
+  return msg;
+}
+function fakeRefine(t: TailoredResume, message: string): { reply: string; tailored: TailoredResume | null } {
+  const m = message.toLowerCase();
+  const known = new Set(t.skillsOrder.map((s) => s.toLowerCase()));
+  const add = message.match(/\badd\s+([a-z0-9.+# -]+?)(?:\s+to\b|$)/i);
+  if (add && !known.has(add[1].trim().toLowerCase())) {
+    return { reply: `I can't add ${add[1].trim()}: it isn't in your resume. If you've used it, add it to your master resume first.`, tailored: null };
+  }
+  const next = clone(t);
+  const done: string[] = [];
+  if (/short|concise|one page|trim/.test(m)) {
+    for (const s of next.sections) s.bullets = s.bullets.slice(0, 2);
+    done.push("kept the two strongest bullets per role");
+  }
+  if (/cover/.test(m) && /drop|remove|no /.test(m)) {
+    next.coverNote = null;
+    done.push("removed the cover note");
+  }
+  if (/backend|api|node|database|lead with|first/.test(m) || done.length === 0) {
+    const score = (s: string) => (/api|node|postgres|backend|server|database/i.test(s) ? 0 : 1);
+    for (const s of next.sections) s.bullets.sort((a, b) => score(a.text) - score(b.text));
+    const weight = (s: TailoredResume["sections"][number]) => s.bullets.filter((b) => score(b.text) === 0).length;
+    next.sections.sort((a, b) => weight(b) - weight(a));
+    next.skillsOrder.sort((a, b) => score(a) - score(b));
+    done.push("moved the backend and API work to the top");
+  }
+  const reply = done.join(", ").replace(/^./, (c) => c.toUpperCase()) + ".";
+  return { reply, tailored: next };
+}
+
+route("GET", "/jobs/:id/resume-chat", (m) => {
+  findJob(Number(m[1]));
+  return chatOf(Number(m[1]));
+});
+
+route("POST", "/jobs/:id/resume-chat", (m, _q, body: RefineRequest): RefineResponse => {
+  const job = findJob(Number(m[1]));
+  const message = String(body?.message ?? "").trim();
+  if (!message) throw new MockError(400, { error: "Write what you'd like changed" });
+  if (job.application && SENT_STATUSES.includes(job.application.status)) {
+    throw new MockError(409, { error: "This application was already sent, so its resume can't change" });
+  }
+  const base = body.baseVersionId ? db.resumeVersions.get(body.baseVersionId) : job.resumeVersions.find((v) => v.active) ?? job.resumeVersions[0];
+  if (!base) throw new MockError(400, { error: "Tailor the resume for this job first, then refine it here" });
+  const user = say(job.id, "user", message);
+  const out = fakeRefine(base.tailored, message);
+  if (!out.tailored) return { messages: [user, say(job.id, "assistant", out.reply)], version: null };
+  const id = Math.max(0, ...db.resumeVersions.keys()) + 1;
+  const rv: ResumeVersionItem = { ...clone(base), id, tailored: out.tailored, pdfUrl: `/api/resume-versions/${id}/pdf`, createdAt: new Date().toISOString(), parentId: base.id, instruction: message, active: true };
+  addVersion(job, rv);
+  log("resume.refined", job, { resumeVersionId: id, instruction: message });
+  return { messages: [user, say(job.id, "assistant", out.reply, id)], version: rv };
+});
+
+route("POST", "/resume-versions/:id/restore", (m): ResumeVersionItem => {
+  const old = db.resumeVersions.get(Number(m[1]));
+  if (!old) throw new MockError(404, { error: "Resume version not found" });
+  const job = db.jobs.find((j) => j.resumeVersions.some((v) => v.id === old.id))!;
+  const id = Math.max(0, ...db.resumeVersions.keys()) + 1;
+  const rv: ResumeVersionItem = { ...clone(old), id, pdfUrl: `/api/resume-versions/${id}/pdf`, createdAt: new Date().toISOString(), parentId: old.id, instruction: null, active: true };
+  addVersion(job, rv);
+  say(job.id, "assistant", `Restored version #${old.id}.`, id);
+  log("resume.restored", job, { resumeVersionId: id, restoredFrom: old.id });
   return rv;
 });
 

@@ -29,6 +29,9 @@ const TITLES: Record<AgentActionType, string> = {
   "resume.tailored": "Tailored the resume",
   "resume.tailor_rejected": "Rejected a tailored resume",
   "resume.pdf_rendered": "Rendered the resume PDF",
+  "resume.refined": "Refined the resume from chat",
+  "resume.refine_rejected": "Refused a resume edit that would invent something",
+  "resume.restored": "Restored an earlier resume version",
   "telegram.card_sent": "Sent a Telegram card",
   "telegram.tap": "You tapped a Telegram button",
   "application.approved": "You approved the application",
@@ -58,7 +61,7 @@ export const activityTitle = (t: AgentActionType) => TITLES[t];
 
 export const activityTone = (t: AgentActionType): Tone => {
   if (t === "apply.submitted" || t === "application.marked_applied") return "success";
-  if (t === "apply.failed" || t === "resume.tailor_rejected" || t === "apply.blocked_cap") return "danger";
+  if (t === "apply.failed" || t === "resume.tailor_rejected" || t === "resume.refine_rejected" || t === "apply.blocked_cap") return "danger";
   if (t === "application.manual" || t === "job.filtered_out") return "warning";
   if (t.startsWith("telegram") || t === "application.approved" || t === "answer.approved" || t === "apply.submit_approved") return "accent";
   return "neutral";

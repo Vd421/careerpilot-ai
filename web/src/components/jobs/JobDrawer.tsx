@@ -2,17 +2,18 @@ import { useMutation } from "@tanstack/react-query";
 import { Check, ExternalLink, FileText, Send, SkipForward, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import type { DisplayStatus, JobDetail, ResumeVersionItem } from "@contracts";
+import type { DisplayStatus, JobDetail } from "@contracts";
 import { api } from "@/lib/api";
 import { useInvalidateAll, useJob } from "@/lib/queries";
 import { useToast } from "@/lib/toast";
-import { formatDate, formatSalary, SOURCE_LABEL, MANUAL_REASON_LABEL } from "@/lib/format";
+import { formatSalary, SOURCE_LABEL, MANUAL_REASON_LABEL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import { Badge, Chip, StatusBadge } from "@/components/ui/badge";
+import { Badge, StatusBadge } from "@/components/ui/badge";
 import { EmptyState, ErrorState, Skeleton } from "@/components/ui/card";
 import { Drawer } from "@/components/ui/overlay";
 import { Tabs, TabsContent, TabsList, TabsTrigger, MatchBar } from "@/components/ui/controls";
 import { FlagChip } from "./parts";
+import { ResumeTab } from "./ResumeTab";
 
 const SKIPPABLE: DisplayStatus[] = ["discovered", "scored", "pushed", "pending_approval", "needs_answers", "filtered_out"];
 const TELEGRAM_WAIT: DisplayStatus[] = ["pending_approval", "needs_answers", "approved"];
@@ -23,65 +24,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <h3 className="mb-2.5 text-[11.5px] font-medium uppercase tracking-[0.04em] text-muted">{title}</h3>
       {children}
     </section>
-  );
-}
-
-export function ResumePreview({ version }: { version: ResumeVersionItem }) {
-  const t = version.tailored;
-  return (
-    <div className="rounded-[10px] border border-border bg-[#fdfdfb] p-5">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Badge tone="accent">Variant {version.variantName ?? "default"}</Badge>
-          <span className="text-[12px] text-muted">Tailored {formatDate(version.createdAt)}</span>
-        </div>
-        {version.pdfUrl && (
-          <a
-            href={version.pdfUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-7 items-center gap-1.5 rounded-[8px] border border-border bg-surface px-2.5 text-[12.5px] font-medium shadow-card hover:bg-[#fbfaf8]"
-          >
-            <FileText className="size-[14px]" strokeWidth={1.5} /> Open PDF
-          </a>
-        )}
-      </div>
-      {t.headline && <p className="mb-4 text-[13.5px] leading-relaxed">{t.headline}</p>}
-      {t.sections.map((s) => (
-        <div key={s.sourceId} className="mb-4">
-          <h4 className="mb-1.5 text-[12.5px] font-semibold capitalize">{s.sourceId.replace(/^(exp|proj)-/, "").replace(/-/g, " ")}</h4>
-          <ul className="space-y-1.5">
-            {s.bullets.map((b) => (
-              <li key={b.sourceBulletId} className="flex gap-2 text-[13px] leading-relaxed">
-                <span className="mt-[9px] size-1 shrink-0 rounded-full bg-[#a39f95]" aria-hidden />
-                <span>
-                  {b.text}
-                  <span className="num ml-1.5 text-[10.5px] text-[#a39f95]" title="The original resume bullet this was reworded from">
-                    {b.sourceBulletId}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-      {t.skillsOrder.length > 0 && (
-        <div className="mb-1">
-          <h4 className="mb-1.5 text-[12.5px] font-semibold">Skills</h4>
-          <div className="flex flex-wrap gap-1.5">
-            {t.skillsOrder.map((s) => (
-              <Chip key={s}>{s}</Chip>
-            ))}
-          </div>
-        </div>
-      )}
-      {t.coverNote && (
-        <div className="mt-4 border-t border-border pt-3">
-          <h4 className="mb-1 text-[12.5px] font-semibold">Cover note</h4>
-          <p className="text-[13px] leading-relaxed text-[#4a4843]">{t.coverNote}</p>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -235,7 +177,7 @@ function DrawerBody({ job }: { job: JobDetail }) {
 
         <TabsContent value="resume" className="pt-4 outline-none">
           {latest ? (
-            <ResumePreview version={latest} />
+            <ResumeTab job={job} />
           ) : (
             <EmptyState
               icon={FileText}

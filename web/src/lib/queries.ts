@@ -9,6 +9,7 @@ export const qk = {
   jobs: (q: JobsQuery) => ["jobs", q] as const,
   recent: ["jobs", "recent"] as const,
   job: (id: number | null) => ["job", id] as const,
+  resumeChat: (jobId: number) => ["job", jobId, "resume-chat"] as const,
   applications: ["applications"] as const,
   application: (id: number | null) => ["application", id] as const,
   questions: (s?: string) => ["questions", s ?? "all"] as const,
@@ -26,6 +27,7 @@ export const useOverview = () => useQuery({ queryKey: qk.overview, queryFn: api.
 export const useJobs = (q: JobsQuery) => useQuery({ queryKey: qk.jobs(q), queryFn: () => api.jobs(q), placeholderData: (prev) => prev });
 export const useRecentJobs = () => useQuery({ queryKey: qk.recent, queryFn: api.recentJobs });
 export const useJob = (id: number | null) => useQuery({ queryKey: qk.job(id), queryFn: () => api.job(id!), enabled: id != null });
+export const useResumeChat = (jobId: number) => useQuery({ queryKey: qk.resumeChat(jobId), queryFn: () => api.resumeChat(jobId) });
 export const useApplications = () => useQuery({ queryKey: qk.applications, queryFn: () => api.applications() });
 export const useApplication = (id: number | null) => useQuery({ queryKey: qk.application(id), queryFn: () => api.application(id!), enabled: id != null });
 export const useQuestions = (status?: "pending" | "asked" | "answered") => useQuery({ queryKey: qk.questions(status), queryFn: () => api.questions(status) });

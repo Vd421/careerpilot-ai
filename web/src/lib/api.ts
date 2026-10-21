@@ -20,6 +20,9 @@ import type {
   QuestionItem,
   QuestionStatus,
   ResumeVariantItem,
+  RefineRequest,
+  RefineResponse,
+  ResumeChatMessageItem,
   ResumeVersionItem,
   SettingsDto,
   SourceStatus,
@@ -89,6 +92,9 @@ export const api = {
   createJob: (body: CreateJobRequest) => post<JobDetail>("/jobs", body),
   pushJob: (id: number) => post<{ applicationId: number }>(`/jobs/${id}/push`),
   tailorJob: (id: number) => post<ResumeVersionItem>(`/jobs/${id}/tailor`),
+  resumeChat: (jobId: number) => get<ResumeChatMessageItem[]>(`/jobs/${jobId}/resume-chat`),
+  refineResume: (jobId: number, body: RefineRequest) => post<RefineResponse>(`/jobs/${jobId}/resume-chat`, body),
+  restoreVersion: (versionId: number) => post<ResumeVersionItem>(`/resume-versions/${versionId}/restore`),
   skipJob: (id: number) => post<void>(`/jobs/${id}/skip`),
 
   applications: (q: { status?: ApplicationStatus; loopId?: number } = {}) =>

@@ -126,6 +126,21 @@ Tailoring only happens when I tap [View resume] or [Apply], so skipped jobs cost
 A: Rule 3. Numbers are compared as whole tokens against the source bullet, so "60%" isn't in "...by 40%" and the
 version is rejected, and "40" can't sneak in where the source said "400".
 
+### 7b. Refine chat (`server/src/tailor/refine.ts`, `web/src/components/jobs/ResumeTab.tsx`)
+
+**What:** A chat box on the Resume tab. "Lead with backend work", "make it shorter", "drop the cover note" → Sonnet
+returns `{ reply, changed, tailored }` and a new version appears, with its own PDF. Older versions stay in a picker and
+can be made current again.
+
+**Why it can't invent:** the output goes through the **same validator** as tailoring. Ask "add Kubernetes" and the
+model is told not to; if it does anyway, the validator rejects it (one retry), nothing is saved, and the reply says why.
+Refines count toward the same daily cap, and if the form was already filled with the old resume, it's filled again
+so I never submit a resume I didn't see.
+
+**Q: Why is restoring an old version a copy instead of just pointing back to it?**
+A: History stays a straight line: the newest version is always the current one, and every version records where it
+came from (`parentId`) and why (`instruction`). It's also free, with no AI call, just a PDF render.
+
 ---
 
 ## 8. Resume PDF (`server/src/pdf/`)
@@ -254,7 +269,7 @@ product ones (like hiding filtered-out jobs by default), not type mismatches.
 
 ## 15. Testing
 
-**What:** 316 tests (286 server, 30 web), all offline:
+**What:** 333 tests (300 server, 33 web), all offline:
 - **Unit:** filters, validator, normalization.
 - **Database:** a separate test database, wiped before each test.
 - **API:** supertest.

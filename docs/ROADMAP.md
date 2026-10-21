@@ -31,6 +31,9 @@
 - [x] Dashboard: Overview, Loops, Jobs, Applications, Questions, Activity, Settings, ⌘K, demo mode
 - [x] 316 tests (286 server incl. real-Chromium form tests + e2e, 30 web), `npm run dev:all`, README, WALKTHROUGH
 
+### After the sprint
+- [x] Refine chat: edit a tailored resume by instruction (same no-invention validator), version history + restore (now 333 tests)
+
 ### Before the sprint
 - [x] Server scaffold, Postgres + Prisma, `resume.json` schema + loader, scoring CLI
 
@@ -43,6 +46,7 @@
 - Test files aren't type-checked (tsconfig includes `src` only).
 
 ## Next (after this sprint, in order)
+- [ ] Master resume editor page (edit `resume.json` in a form instead of JSON)
 - [ ] **M5 Inbox tracking:** detect recruiter replies, link to the application, update status (feeds real A/B response rates)
 - [ ] **M6 Follow-ups + referrals:** 7-day follow-up drafts, referral asks, send on `[Send]`
 - [ ] Recruiter email lookup

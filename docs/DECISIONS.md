@@ -33,6 +33,8 @@
 | 2026-10-21 | Remotive fetched with one category request + local title filter | Remotive asks for max 4 calls/day |
 | 2026-10-21 | Pre-scan blocks only on a *visible* CAPTCHA; invisible reCAPTCHA/hCaptcha (on almost every Greenhouse/Ashby/Lever form) is allowed, and a challenge or missing confirmation at submit → `manual` | Otherwise every job would be manual; submit failures never retry |
 | 2026-10-21 | Standard fields (name, email, phone, resume, LinkedIn/GitHub/website) filled from `resume.json`, never asked | They're facts already in my resume |
+| 2026-10-21 | Refine chat reuses the tailoring validator; refines share the 20/day tailor cap; every version keeps parent + instruction; restore = copy as newest (no AI call) | Chat can't invent what tailoring can't; history stays linear and auditable |
+| 2026-10-21 | Changing the resume of an already-filled application clears the fill and the [Submit] tap, then fills again | Never submit a resume I didn't see in the screenshot |
 | Open (M5) | Gmail API vs IMAP/SMTP app password | Gmail OAuth refresh tokens expire every 7 days in Testing mode |
 
 ## Job sources: terms of use (checked 2026-10-21)
